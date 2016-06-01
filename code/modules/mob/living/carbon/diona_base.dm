@@ -28,4 +28,5 @@
 		adjustOxyLoss(severity*0.2)
 		adjustHalLoss(severity*0.8)//Damage is 20% suffocation, 80% halloss
 
+
 		//This damage must be adjusted so that diona survive 180 seconds in total darkness

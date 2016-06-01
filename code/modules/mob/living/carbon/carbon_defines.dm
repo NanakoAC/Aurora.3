@@ -23,3 +23,4 @@
 	var/datum/reagents/metabolism/touching = null
 
 	var/pulse = PULSE_NORM	//current pulse level
+	var/light_energy //Used by diona. Stored light energy

@@ -1,4 +1,5 @@
 /mob/living/carbon/alien/diona
+	var/energy //Used for stored light energy, as nutrition is being repurposed
 	name = "diona nymph"
 	voice_name = "diona nymph"
 	adult_form = /mob/living/carbon/human

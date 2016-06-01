@@ -1,6 +1,11 @@
 // BEGIN_INTERNALS
 /*
-MAP_ICON_TYPE: 0
+LAST_COMPILE_TIME: 1464726217
+DIR: code code\datums code\datums\diseases code\datums\diseases\advance code\game code\game\machinery code\game\machinery\computer code\game\machinery\computer3 code\game\machinery\computer3\computers code\game\mecha code\game\objects code\game\objects\items code\game\objects\items\robot code\game\objects\items\weapons code\game\objects\items\weapons\tanks code\modules code\modules\mob code\modules\mob\living code\modules\mob\living\carbon code\modules\mob\living\carbon\alien code\modules\mob\living\carbon\alien\diona code\modules\mob\living\carbon\alien\larva code\modules\mob\living\carbon\human code\modules\mob\living\silicon code\modules\mob\living\silicon\robot code\modules\reagents code\modules\reagents\Chemistry-Reagents icons icons\mecha nano nano\templates 
 AUTO_FILE_DIR: OFF
+MAP_ICON_TYPE: 0
+LAST_COMPILE_VERSION: 509.1319
+WINDOW: code\modules\mob\living\carbon\alien\diona\diona.dm;code\modules\mob\living\carbon\alien\diona\diona_attacks.dm;code\modules\mob\living\carbon\alien\diona\diona_powers.dm;code\modules\mob\living\carbon\alien\diona\life.dm;code\modules\mob\living\carbon\alien\diona\progression.dm;code\modules\mob\living\carbon\alien\diona\say_understands.dm;code\modules\mob\living\carbon\alien\diona\update_icons.dm
+FILE: code\modules\mob\living\carbon\alien\diona\life.dm
 */
 // END_INTERNALS

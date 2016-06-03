@@ -521,7 +521,7 @@
 #define ORGAN_MUTATED    2048
 #define ORGAN_ASSISTED   4096
 #define ORGAN_ADV_ROBOT  4096
-
+#define ORGAN_PLANT  	 8192
 
 // Admin permissions. Please don't edit these values without speaking to Errorage first. ~Carn
 #define R_BUILDMODE     1

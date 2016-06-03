@@ -22,6 +22,7 @@
 	amputation_point = "branch"
 	joint = "structural ligament"
 	dislocated = -1
+	status = ORGAN_PLANT
 
 /obj/item/organ/external/diona/chest
 	name = "core trunk"

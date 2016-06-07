@@ -31,11 +31,66 @@
 	else	//If light is <=0 then it hurts instead
 
 		//var/severity = DS.stored_energy - (DS.stored_energy*2)
-		var/severity = !light_amount//Get a positive value which is the severity of the damage
-		world << "[src] taking damage from darkness [severity]"
+		var/severity = light_amount*-1//Get a positive value which is the severity of the damage
 		adjustBruteLoss(severity*DS.trauma_factor)
-		adjustHalLoss(severity*DS.pain_factor)
-		stored_energy = 0//We reset the energy back to zero after calculating the damage. dont want it to go negative
+		adjustHalLoss(severity*DS.pain_factor, 1)
+		DS.stored_energy = 0//We reset the energy back to zero after calculating the damage. dont want it to go negative
+
+	diona_handle_lightmessages(DS)
+
+
+
+/mob/living/carbon/proc/diona_handle_lightmessages(var/datum/dionastats/DS)
+	//This function handles the RP messages that inform the diona player about their light/withering state
+	//Lightstates:
+	//1: Full. Go down from this state below 80%
+	//2. average: Go up a state at 100%, go down a state at 50%
+	//3. Subsisting: Go down from this state at 0.% light, go up from it at 40%
+	//4: Pain: Go up to this state when light is negative and damage < 40. Go down from when damage >60
+	//5: Critical:Go up to this state when damage < 100 and not paralysed. Go down from it when halloss hits 100 and you're paralysed
+	//6: Dying: You've collapsed from pain and are dying. theres nothing below this but death
+	DS.EP = DS.stored_energy / DS.max_energy
+
+	if (DS.LMS == 1)//If we're full
+		if (DS.EP <= 0.8)//But at <=80% energy
+			DS.LMS = 2
+			src << "<span class='warning'>The darkness makes you uncomfortable</span>"
+
+	else if (DS.LMS == 2)
+		if (DS.EP >= 0.99)
+			DS.LMS = 1
+			src << "You bask in the light"
+		else if (DS.EP <= 0.4)
+			DS.LMS = 3
+			src << "<span class='warning'>You feel lethargic as your energy drains away. Find some light soon!</span>"
+
+	else if (DS.LMS == 3)
+		if (DS.EP >= 0.5)
+			DS.LMS = 2
+			src << "You feel a little more energised as you return to the light. Stay awhile"
+		else if (DS.EP <= 0.0)
+			DS.LMS = 4
+			src << "<span class='danger'> You feel sensory distress as your tendrils start to wither in the darkness. You will die soon without light</span>"
+	//From here down, we immediately return to state 3 if we get any light
+	else
+		if (DS.EP > 0.0)//If there's any light at all, we can be saved
+			src << "Light! At long last. Treasure it, savour it, hold onto it"
+			DS.LMS = 3
+		else
+			var/HP = diona_get_health(DS) / DS.max_health//HP  = health-percentage
+			if (DS.LMS == 4)
+				if (HP < 0.6)
+					src << "<span class='danger'> The darkness burns. Your nymphs decay and wilt You are in mortal danger</span>"
+					DS.LMS = 5
+
+			else if (DS.LMS == 5)
+				if (paralysis > 0)
+					src << "<span class='danger'> Your body has reached critical integrity, it can no longer move. The end comes soon</span>"
+					DS.LMS = 6
+			else if (DS.LMS == 6)
+				return
+
+
 
 
 /mob/living/carbon/proc/diona_handle_regeneration(var/datum/dionastats/DS)
@@ -54,17 +109,32 @@
 		adjustToxLoss(-1)
 		DS.stored_energy -= 1
 
+	if (halloss > 0 && DS.stored_energy > 1)
+		adjustHalLoss(adjustHalLoss(-3, 1))
+		DS.stored_energy -= 1
+
+/mob/living/carbon/proc/diona_get_health(var/datum/dionastats/DS)
+	if (DS.dionatype == 0)
+		return health
+	else
+		return health+(maxHealth*0.5)
+
+
+
 //Dionastats is an instanced object that diona will each create and hold a reference to.
 //It's used to store information which are relevant to both types of diona, to save on adding variables to carbon
 //Most of these values are calculated from information configured at authortime in either diona_nymph.dm or diona_gestalt.dm
 /datum/dionastats
 	var/max_energy//how much energy the diona can store. will determine how long its energy lasts in darkness
 	var/stored_energy//how much is currently stored
+	var/EP//Energy percentage.
 	var/trauma_factor//Multiplied with severity to determine how much damage the diona takes in darkness
 	var/pain_factor//Multiplied with severity to determine how much pain the diona takes in darkness
+	var/max_health = 100
 
 	var/obj/item/organ/diona/node/light_organ = null//The organ this gestalt uses to recieve light. This is left null for nymphs
-
+	var/LMS = 1//Lightmessage state. Switching between states gives the user a message
+	var/dionatype//0 = nymph, 1 = worker gestalt
 
 
 

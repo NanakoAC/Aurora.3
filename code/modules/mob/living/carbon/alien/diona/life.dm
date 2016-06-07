@@ -1,6 +1,7 @@
 //Dionaea regenerate health and nutrition in light.
 /mob/living/carbon/alien/diona/handle_environment(datum/gas_mixture/environment)
-	diona_handle_light()
+	if (stat != DEAD)
+		diona_handle_light(DS)
 	/*
 	var/light_amount = 5 //how much light there is in the place, affects receiving nutrition and healing
 	if(isturf(loc)) //else, there's considered to be no light

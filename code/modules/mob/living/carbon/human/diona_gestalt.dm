@@ -14,7 +14,7 @@
 
 /mob/living/carbon/human/diona/handle_environment(datum/gas_mixture/environment)
 	.=..()
-	diona_handle_light(DS.light_organ)
+	diona_handle_light(DS)
 
 /mob/living/carbon/human/diona/verb/check_light()
 	set category = "Abilities"
@@ -31,8 +31,11 @@
 	var/MLS = (1.5 / 2.1)//Maximum (energy) lost per second, in total darkness
 	DS = new/datum/dionastats()
 	DS.max_energy = energy_duration * MLS
+	DS.max_health = maxHealth*2
+	DS.stored_energy = DS.max_energy
 	DS.pain_factor = (100 / dark_consciousness) / MLS
-	DS.trauma_factor = (200 / dark_survival) / MLS
+	DS.trauma_factor = (DS.max_health / dark_survival) / MLS
+	DS.dionatype = 1//Gestalt
 
 	for (var/organ in internal_organs)
 		if (istype(organ, /obj/item/organ/diona/node))

@@ -29,6 +29,7 @@
 	//species = all_species[]
 	verbs += /mob/living/carbon/alien/diona/proc/merge
 	set_species("Diona")
+	setup_dionastats()
 
 /mob/living/carbon/alien/diona/start_pulling(var/atom/movable/AM)
 	//TODO: Collapse these checks into one proc (see pai and drone)
@@ -97,10 +98,10 @@
 
 	maxHealth = species.total_health
 
+
 	spawn(0)
 		regenerate_icons()
-		vessel.add_reagent("blood",560-vessel.total_volume)
-		fixblood()
+		make_blood()
 
 	// Rebuild the HUD. If they aren't logged in then login() should reinstantiate it for them.
 	if(client && client.screen)
@@ -109,10 +110,26 @@
 			qdel(hud_used)
 		hud_used = new /datum/hud(src)
 
+
 	if(species)
 		return 1
 	else
 		return 0
+
+/mob/living/carbon/alien/diona/proc/make_blood()
+
+	if(vessel)
+		return
+
+	vessel = new/datum/reagents(600)
+	vessel.my_atom = src
+
+	if(species && species.flags & NO_BLOOD) //We want the var for safety but we can do without the actual blood.
+		return
+
+	vessel.add_reagent("blood",560)
+	spawn(1)
+		fixblood()
 
 /mob/living/carbon/alien/diona/proc/fixblood()
 	for(var/datum/reagent/blood/B in vessel.reagent_list)
@@ -126,6 +143,68 @@
 	var/MLS = (1.5 / 2.1)//Maximum energy lost per second, in total darkness
 	DS = new/datum/dionastats()
 	DS.max_energy = energy_duration * MLS
-	DS.pain_factor = (100 / dark_consciousness) / MLS
-	DS.trauma_factor = (200 / dark_survival) / MLS
+	DS.stored_energy = (DS.max_energy / 2)
+	DS.max_health = maxHealth
+	DS.pain_factor = (50 / dark_consciousness) / MLS
+	DS.trauma_factor = (DS.max_health / dark_survival) / MLS
+	DS.dionatype = 0//Nymph
 
+//Overriding this function from /mob/living/carbon/alien/life.dm
+/mob/living/carbon/alien/diona/handle_regular_status_updates()
+
+	if(status_flags & GODMODE)	return 0
+
+	if(stat == DEAD)
+		blinded = 1
+		silent = 0
+	else
+		updatehealth()
+		handle_stunned()
+		handle_weakened()
+		if(health <= 0)
+			death()
+			blinded = 1
+			silent = 0
+			return 1
+
+		if (halloss > 50)
+			paralysis = 8
+
+
+		if(paralysis && paralysis > 0)
+			handle_paralysed()
+			blinded = 1
+			stat = UNCONSCIOUS
+
+		if(sleeping)
+			if (mind)
+				if(mind.active && client != null)
+					sleeping = max(sleeping-1, 0)
+			blinded = 1
+			stat = UNCONSCIOUS
+		else if(resting)
+
+		else
+			stat = CONSCIOUS
+
+		// Eyes and blindness.
+		if(!has_eyes())
+			eye_blind =  1
+			blinded =    1
+			eye_blurry = 1
+		else if(eye_blind)
+			eye_blind =  max(eye_blind-1,0)
+			blinded =    1
+		else if(eye_blurry)
+			eye_blurry = max(eye_blurry-1, 0)
+
+		//Ears
+		if(sdisabilities & DEAF)	//disabled-deaf, doesn't get better on its own
+			ear_deaf = max(ear_deaf, 1)
+		else if(ear_deaf)			//deafness, heals slowly over time
+			ear_deaf = max(ear_deaf-1, 0)
+			ear_damage = max(ear_damage-0.05, 0)
+
+		update_icons()
+
+	return 1

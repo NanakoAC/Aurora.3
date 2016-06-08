@@ -2,6 +2,8 @@
 //Created because humans have these
 /mob/living/carbon/alien/diona/var/datum/reagents/vessel
 /mob/living/carbon/alien/diona/var/list/internal_organs_by_name = list() // so internal organs have less ickiness too
+/mob/living/carbon/alien/diona/var/max_nutrition = 6000
+
 
 //Diona time variables, these differ slightly between a gestalt and a nymph. All values are times in seconds
 /mob/living/carbon/alien/diona
@@ -52,7 +54,6 @@
 
 //Functions duplicated from humans, albeit slightly modified
 /mob/living/carbon/alien/diona/proc/set_species(var/new_species)
-	world << "Calling setspecies for [src]"
 	if(!dna)
 		if(!new_species)
 			new_species = "Human"
@@ -79,17 +80,13 @@
 		holder_type = null
 
 	species = all_species[new_species]
-	world << "Species Set for [src]"
 	if(species.language)
 		add_language(species.language)
-		world << "language set for [src]"
 
 	if(species.default_language)
-		world << "Dlanguage set for [src]"
 		add_language(species.default_language)
 
 	if(species.holder_type)
-		world << "holder type set for [src]"
 		holder_type = species.holder_type
 
 	icon_state = lowertext(species.name)

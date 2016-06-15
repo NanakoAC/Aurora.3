@@ -91,7 +91,7 @@
 		handle_random_events()
 
 		//stuff in the stomach
-		handle_stomach()
+		handle_stomach()//This function is in devour.dm
 
 		handle_shock()
 
@@ -1429,22 +1429,7 @@
 			if(L && L.lum_r + L.lum_g + L.lum_b == 0)
 				playsound_local(src,pick(scarySounds),50, 1, -1)
 
-	proc/handle_stomach()
-		spawn(0)
-			for(var/mob/living/M in stomach_contents)
-				if(M.loc != src)
-					stomach_contents.Remove(M)
-					continue
-				if(istype(M, /mob/living/carbon) && stat != 2)
-					if(M.stat == 2)
-						M.death(1)
-						stomach_contents.Remove(M)
-						qdel(M)
-						continue
-					if(air_master.current_cycle%3==1)
-						if(!(M.status_flags & GODMODE))
-							M.adjustBruteLoss(5)
-						nutrition += 10
+
 
 	proc/handle_changeling()
 		if(mind && mind.changeling)

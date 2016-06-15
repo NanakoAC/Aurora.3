@@ -82,6 +82,10 @@
 	..()
 
 	//Health
+
+	//This block of code pointlessly keeps reviving small animals.
+	//If their stat is set to dead then they are dead
+	/*
 	if(stat == DEAD)
 		if(health > 0)
 			icon_state = icon_living
@@ -90,7 +94,7 @@
 			stat = CONSCIOUS
 			density = 1
 		return 0
-
+	*/
 
 	if(health <= 0)
 		death()

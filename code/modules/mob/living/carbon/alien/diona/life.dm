@@ -19,7 +19,7 @@
 		nutrition = max_nutrition
 
 	//handle_trace_chems() implement this later maybe
-
+	handle_stomach()
 	updatehealth()
 
 	return

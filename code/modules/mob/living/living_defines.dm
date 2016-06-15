@@ -40,3 +40,7 @@
 	var/on_fire = 0 //The "Are we on fire?" var
 	var/fire_stacks
 	var/footstep = 0
+	var/list/stomach_contents = list()//This is moved here from carbon defines
+	var/composition_reagent
+	var/composition_reagent_quantity
+	var/datum/reagents/metabolism/ingested = null

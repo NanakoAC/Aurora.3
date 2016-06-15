@@ -6,6 +6,7 @@
 	var/energy_duration = 120//How long this diona can exist in total darkness before its energy runs out
 	var/dark_consciousness = 120//How long this diona can stay on its feet and keep moving in darkness after energy is gone.
 	var/dark_survival = 180//How long this diona can survive in darkness after energy is gone, before it dies
+	composition_reagent = "nutriment"//Dionae are plants, so eating them doesn't give animal protein
 
 /mob/living/carbon/human/diona/set_species(var/new_species, var/default_colour)
 	.=..()

@@ -1,17 +1,20 @@
 
-//Created because humans have these
-/mob/living/carbon/alien/diona/var/datum/reagents/vessel
-/mob/living/carbon/alien/diona/var/list/internal_organs_by_name = list() // so internal organs have less ickiness too
-/mob/living/carbon/alien/diona/var/max_nutrition = 6000
 
 
 //Diona time variables, these differ slightly between a gestalt and a nymph. All values are times in seconds
 /mob/living/carbon/alien/diona
+	var/datum/reagents/vessel
+	var/list/internal_organs_by_name = list() // so internal organs have less ickiness too
+	var/max_nutrition = 6000//when a nymph gathers this much nutrition, it can evolve into a gestalt
+
 	var/energy_duration = 144//The time in seconds that this diona can exist in total darkness before its energy runs out
 	var/dark_consciousness = 144//How long this diona can stay on its feet and keep moving in darkness after energy is gone.
 	var/dark_survival = 216//How long this diona can survive in darkness after energy is gone, before it dies
 	var/datum/dionastats/DS
-
+	mob_size = 4
+	var/mouth_size = 2//how large of a creature it can swallow at once, and how big of a bite it can take out of larger things
+	var/eat_types = 0//This is a bitfield which must be initialised in New(). The valid values for it are in devour.dm
+	composition_reagent = "nutriment"//Dionae are plants, so eating them doesn't give animal protein
 
 /mob/living/carbon/alien/diona
 	name = "diona nymph"
@@ -32,6 +35,22 @@
 	verbs += /mob/living/carbon/alien/diona/proc/merge
 	set_species("Diona")
 	setup_dionastats()
+	eat_types |= TYPE_ORGANIC
+
+/mob/living/carbon/alien/diona/verb/devour(var/mob/living/victim)
+	set category = "Abilities"
+	set name = "Devour Creature"
+	set desc = "Attempt to eat a nearby creature, swallowing it whole if small enough, or eating it piece by piece otherwise"
+	attempt_devour(victim, eat_types, mouth_size)
+
+/mob/living/carbon/alien/diona/verb/check_light()
+	set category = "Abilities"
+	set name = "Check light level"
+	var/turf/T = src.loc
+	var/atom/movable/lighting_overlay/L = locate(/atom/movable/lighting_overlay) in T
+	if(L)
+		var/light_amount = min(10,L.lum_r + L.lum_g + L.lum_b)
+		usr << "The light level here is [light_amount]"
 
 /mob/living/carbon/alien/diona/start_pulling(var/atom/movable/AM)
 	//TODO: Collapse these checks into one proc (see pai and drone)

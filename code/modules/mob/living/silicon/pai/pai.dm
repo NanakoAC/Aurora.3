@@ -7,6 +7,8 @@
 	small = 1
 	pass_flags = 1
 
+	mob_size = 1
+
 	var/network = "SS13"
 	var/obj/machinery/camera/current = null
 

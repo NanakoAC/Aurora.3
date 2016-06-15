@@ -188,7 +188,7 @@ var/list/wierd_mobs_inclusive = list( /mob/living/simple_animal/construct,
 			if (victim.cloneloss >= victim_maxhealth)
 				src.visible_message("[src] finishes devouring [victim]","You finish devouring [victim]")
 				if (victim.mob_size >= 3)
-					handle_devour_mess(user, victim, vessel, 1)
+					handle_devour_mess(src, victim, vessel, 1)
 				qdel(victim)
 				break
 		else
@@ -272,6 +272,8 @@ var/list/wierd_mobs_inclusive = list( /mob/living/simple_animal/construct,
 		//Bloodying the attacker, if possible
 		//Bloodying the attacker's tile
 	//After that, we will allocate the remaining blood placements to random tiles around the victim and attacker, until either all are used or victim is dead
+	var/datum/reagent/blood/B = vessel.reagent_list[/datum/reagent/blood]
+
 	if (!turf_hasblood(get_turf(victim)))
 		world << "Victimloc has no blood, adding it"
 		devour_add_blood(victim, get_turf(victim), vessel)
@@ -279,9 +281,8 @@ var/list/wierd_mobs_inclusive = list( /mob/living/simple_animal/construct,
 	else if (!user.blood_DNA)
 		world << "Attackerhands has no blood, adding it"
 		//if this blood isn't already in the list, add it
-		for(var/datum/reagent/blood/B in vessel.reagent_list)
-			user.blood_DNA = list(B["blood_DNA"])
-		user.hand_blood_color = B.blood_color
+		user.blood_DNA = list(B.data["blood_DNA"])
+		user.blood_color = B.data["blood_color"]
 		user.update_inv_gloves()	//handles bloody hands overlays and updating
 		user.verbs += /mob/living/carbon/human/proc/bloody_doodle
 		return 1 //we applied blood to the item
@@ -292,18 +293,20 @@ var/list/wierd_mobs_inclusive = list( /mob/living/simple_animal/construct,
 
 	if (finish)
 		world << "Adding gibs"
-		var/obj/effect/decal/cleanable/blood/gibs/gib = new /obj/effect/decal/cleanable/blood/gibs(loc)
+		//var/obj/effect/decal/cleanable/blood/gibs/gib =
+		new /obj/effect/decal/cleanable/blood/gibs(get_turf(victim))
 
 
 /proc/devour_add_blood(/var/mob/living/M, var/turf/location, var/datum/reagents/vessel)
-	for(var/obj/effect/decal/cleanable/blood/B in locationcontents)
+	for(var/obj/effect/decal/cleanable/blood/B in location.contents)
 		if(!B.blood_DNA)
 			B.blood_DNA = list()
 		if(!B.blood_DNA[M.dna.unique_enzymes])
 			B.blood_DNA[M.dna.unique_enzymes] = M.dna.b_type
-			B.virus2 = virus_copylist(M.virus2)
+			B.virus2 = null
 			return 1 //we bloodied the floor
-		blood_splatter(src,M.get_blood(vessel),1)
+		blood_splatter(src,vessel.reagent_list[/datum/reagent/blood],1)
+		//blood_splatter(src,M.get_blood(vessel),1)
 		return 1 //we bloodied the floor
 	return 0
 /*
@@ -337,10 +340,10 @@ var/list/wierd_mobs_inclusive = list( /mob/living/simple_animal/construct,
 		var/datum/reagents/vessel = new/datum/reagents(600)
 		vessel.add_reagent("blood",560)
 		for(var/datum/reagent/blood/B in vessel.reagent_list)
-		if(B.id == "blood")
-			B.data = list(	"donor"=bleeder,"viruses"=null,"species"=bleeder.name,"blood_DNA"=bleeder.name,"blood_colour"= "#FF0000","blood_type"=null,	\
-							"resistances"=null,"trace_chem"=null, "virus2" = null, "antibodies" = list())
-			B.color = B.data["blood_colour"]
+			if(B.id == "blood")
+				B.data = list(	"donor"=bleeder,"viruses"=null,"species"=bleeder.name,"blood_DNA"=bleeder.name,"blood_colour"= "#FF0000","blood_type"=null,	\
+								"resistances"=null,"trace_chem"=null, "virus2" = null, "antibodies" = list())
+				B.color = B.data["blood_colour"]
 		return vessel
 
 

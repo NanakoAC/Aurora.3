@@ -20,7 +20,7 @@
 	response_harm   = "kicks"
 	faction = "goat"
 	attacktext = "kicked"
-	health = 40
+	maxHealth = 40
 	melee_damage_lower = 1
 	melee_damage_upper = 5
 	var/datum/reagents/udder = null
@@ -104,7 +104,7 @@
 	response_disarm = "gently pushes aside"
 	response_harm   = "kicks"
 	attacktext = "kicked"
-	health = 250//more robust because large
+	maxHealth = 250//more robust because large
 	var/datum/reagents/udder = null
 	mob_size = 20//based on mass of holstein fresian dairy cattle, what the sprite is based on
 
@@ -166,7 +166,7 @@
 	response_disarm = "gently pushes aside"
 	response_harm   = "kicks"
 	attacktext = "kicked"
-	health = 1
+	maxHealth = 1
 	var/amount_grown = 0
 	pass_flags = PASSTABLE | PASSGRILLE
 	small = 1
@@ -208,7 +208,7 @@ var/global/chicken_count = 0
 	response_disarm = "gently pushes aside"
 	response_harm   = "kicks"
 	attacktext = "kicked"
-	health = 10
+	maxHealth = 10
 	var/eggsleft = 0
 	var/body_color
 	pass_flags = PASSTABLE

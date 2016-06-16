@@ -139,6 +139,8 @@ var/list/wierd_mobs_inclusive = list( /mob/living/simple_animal/construct,
 		src << "Swallowing failed!"//reason unknown, maybe the eater got stunned?
 
 
+
+
 /mob/living/proc/devour_gradual(var/mob/living/victim, var/mouth_size)
 	//This function will start consuming the victim by taking bites out of them.
 	//Victim or attacker moving will interrupt it
@@ -151,6 +153,7 @@ var/list/wierd_mobs_inclusive = list( /mob/living/simple_animal/construct,
 	var/turf/victimloc = victim.loc
 	var/messes = 0//number of bloodstains we've placed
 	var/datum/reagents/vessel = get_vessel(victim)
+	world << "Vessel fetched + [vessel]"
 	if(!victim.composition_reagent_quantity)
 		victim.calculate_composition()
 
@@ -179,10 +182,11 @@ var/list/wierd_mobs_inclusive = list( /mob/living/simple_animal/construct,
 	var/i = 0
 	for (i=0;i < num_bites_needed;i++)
 		if(do_mob(src, victim, bite_delay*10))
+			face_atom(victim)
 			victim.adjustCloneLoss(victim_maxhealth*PEPB)
 			victim.adjustHalLoss(victim_maxhealth*PEPB*5)//Being eaten hurts!
 			src.ingested.add_reagent(victim.composition_reagent, victim.composition_reagent_quantity*PEPB)
-			src.visible_message("[src] bites a chunk out of [victim]","You take a bite out of [victim]")
+			src.visible_message("[src] bites a chunk out of [victim]",bitemessage(victim))
 			if (messes < victim.mob_size - 1)
 				handle_devour_mess(src, victim, vessel)
 			if (victim.cloneloss >= victim_maxhealth)
@@ -199,6 +203,8 @@ var/list/wierd_mobs_inclusive = list( /mob/living/simple_animal/construct,
 			else
 				src << "Devouring Cancelled"//reason unknown, maybe the eater got stunned?
 			break
+
+
 
 //this function gradually digests things inside the mob's contents.
 //It is called from life.dm. Any creatures that don't want to digest their contents simply don't call it
@@ -273,9 +279,9 @@ var/list/wierd_mobs_inclusive = list( /mob/living/simple_animal/construct,
 		//Bloodying the attacker's tile
 	//After that, we will allocate the remaining blood placements to random tiles around the victim and attacker, until either all are used or victim is dead
 	var/datum/reagent/blood/B = vessel.reagent_list[/datum/reagent/blood]
-
+	world << "handlemess + [vessel]"
 	if (!turf_hasblood(get_turf(victim)))
-		world << "Victimloc has no blood, adding it"
+		world << "Victimloc has no blood, adding it +[vessel]"
 		devour_add_blood(victim, get_turf(victim), vessel)
 
 	else if (!user.blood_DNA)
@@ -297,18 +303,34 @@ var/list/wierd_mobs_inclusive = list( /mob/living/simple_animal/construct,
 		new /obj/effect/decal/cleanable/blood/gibs(get_turf(victim))
 
 
-/proc/devour_add_blood(/var/mob/living/M, var/turf/location, var/datum/reagents/vessel)
-	for(var/obj/effect/decal/cleanable/blood/B in location.contents)
-		if(!B.blood_DNA)
+/proc/devour_add_blood(var/mob/living/M, var/turf/location, var/datum/reagents/vessel)
+	for(var/datum/reagent/blood/source in vessel.reagent_list)
+		var/obj/effect/decal/cleanable/blood/B = new /obj/effect/decal/cleanable/blood(location)
+
+		// Update appearance.
+		if(source.data["blood_colour"])
+			B.basecolor = source.data["blood_colour"]
+			B.update_icon()
+			world << "Setting colour"
+
+		// Update blood information.
+		if(source.data["blood_DNA"])
 			B.blood_DNA = list()
-		if(!B.blood_DNA[M.dna.unique_enzymes])
-			B.blood_DNA[M.dna.unique_enzymes] = M.dna.b_type
-			B.virus2 = null
-			return 1 //we bloodied the floor
-		blood_splatter(src,vessel.reagent_list[/datum/reagent/blood],1)
-		//blood_splatter(src,M.get_blood(vessel),1)
-		return 1 //we bloodied the floor
-	return 0
+			world << "Setting DNA 1"
+			if(source.data["blood_type"])
+				B.blood_DNA[source.data["blood_DNA"]] = source.data["blood_type"]
+				world << "Setting DNA 2a"
+			else
+				B.blood_DNA[source.data["blood_DNA"]] = "O+"
+				world << "Setting DNA 2b"
+
+		// Update virus information.
+		if(source.data["virus2"])
+			B.virus2 = virus_copylist(source.data["virus2"])
+			world << "copying virus"
+
+		B.fluorescent  = 0
+		B.invisibility = 0
 /*
 
 /turf/simulated/add_blood(mob/living/carbon/human/M as mob)
@@ -341,7 +363,7 @@ var/list/wierd_mobs_inclusive = list( /mob/living/simple_animal/construct,
 		vessel.add_reagent("blood",560)
 		for(var/datum/reagent/blood/B in vessel.reagent_list)
 			if(B.id == "blood")
-				B.data = list(	"donor"=bleeder,"viruses"=null,"species"=bleeder.name,"blood_DNA"=bleeder.name,"blood_colour"= "#FF0000","blood_type"=null,	\
+				B.data = list(	"donor"=bleeder,"viruses"=null,"species"=bleeder.name,"blood_DNA"=bleeder.name,"blood_colour"= "#a10808","blood_type"=null,	\
 								"resistances"=null,"trace_chem"=null, "virus2" = null, "antibodies" = list())
 				B.color = B.data["blood_colour"]
 		return vessel

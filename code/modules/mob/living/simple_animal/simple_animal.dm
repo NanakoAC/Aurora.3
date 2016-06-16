@@ -69,6 +69,7 @@
 /mob/living/simple_animal/New()
 	..()
 	verbs -= /mob/verb/observe
+	health = maxHealth
 
 /mob/living/simple_animal/Login()
 	if(src && src.client)

@@ -177,7 +177,7 @@ var/list/wierd_mobs_inclusive = list( /mob/living/simple_animal/construct,
 		time_needed_string = "[time_needed_seconds] seconds"
 
 
-	src.visible_message("[src] starts devouring [victim]","You start devouring [victim], this will take approximately [time_needed_string]. You and the victim must remain still to continue, but you can interrupt feeding anytime and leave with what you've already eaten.")
+	src.visible_message("<span class='danger'>[src] starts devouring [victim]","You start devouring [victim], this will take approximately [time_needed_string]. You and the victim must remain still to continue, but you can interrupt feeding anytime and leave with what you've already eaten.</span>")
 
 	var/i = 0
 	for (i=0;i < num_bites_needed;i++)
@@ -186,8 +186,8 @@ var/list/wierd_mobs_inclusive = list( /mob/living/simple_animal/construct,
 			victim.adjustCloneLoss(victim_maxhealth*PEPB)
 			victim.adjustHalLoss(victim_maxhealth*PEPB*5)//Being eaten hurts!
 			src.ingested.add_reagent(victim.composition_reagent, victim.composition_reagent_quantity*PEPB)
-			src.visible_message("[src] bites a chunk out of [victim]",bitemessage(victim))
-			if (messes < victim.mob_size - 1)
+			src.visible_message("<span class='danger'>[src] bites a chunk out of [victim]</span>","<span class='danger'>[bitemessage(victim)]</span>")
+			if (messes < victim.mob_size - 1 && prob(50))
 				handle_devour_mess(src, victim, vessel)
 			if (victim.cloneloss >= victim_maxhealth)
 				src.visible_message("[src] finishes devouring [victim]","You finish devouring [victim]")
@@ -197,9 +197,9 @@ var/list/wierd_mobs_inclusive = list( /mob/living/simple_animal/construct,
 				break
 		else
 			if (victimloc != victim.loc)
-				src << "[victim] moved away, you need to keep it still. Try grabbing, stunning or killing it first."
+				src << "<span class='danger'>[victim] moved away, you need to keep it still. Try grabbing, stunning or killing it first.</span>"
 			else if (ourloc != src.loc)
-				src << "You moved! Devouring cancelled"
+				src << "<span class='danger'>You moved! Devouring cancelled</span>"
 			else
 				src << "Devouring Cancelled"//reason unknown, maybe the eater got stunned?
 			break
@@ -279,12 +279,12 @@ var/list/wierd_mobs_inclusive = list( /mob/living/simple_animal/construct,
 		//Bloodying the attacker's tile
 	//After that, we will allocate the remaining blood placements to random tiles around the victim and attacker, until either all are used or victim is dead
 	var/datum/reagent/blood/B = vessel.reagent_list[/datum/reagent/blood]
-	world << "handlemess + [vessel]"
 	if (!turf_hasblood(get_turf(victim)))
 		world << "Victimloc has no blood, adding it +[vessel]"
 		devour_add_blood(victim, get_turf(victim), vessel)
+		return 1
 
-	else if (!user.blood_DNA)
+	else if (istype(user, /mob/living/carbon/human) && !user.blood_DNA)
 		world << "Attackerhands has no blood, adding it"
 		//if this blood isn't already in the list, add it
 		user.blood_DNA = list(B.data["blood_DNA"])
@@ -296,11 +296,14 @@ var/list/wierd_mobs_inclusive = list( /mob/living/simple_animal/construct,
 	else if (!turf_hasblood(get_turf(user)))
 		world << "Attackerloc has no blood, adding it"
 		devour_add_blood(victim, get_turf(user), vessel)
+		return 1
 
 	if (finish)
 		world << "Adding gibs"
 		//var/obj/effect/decal/cleanable/blood/gibs/gib =
 		new /obj/effect/decal/cleanable/blood/gibs(get_turf(victim))
+		return 1
+	return 0
 
 
 /proc/devour_add_blood(var/mob/living/M, var/turf/location, var/datum/reagents/vessel)
@@ -311,7 +314,6 @@ var/list/wierd_mobs_inclusive = list( /mob/living/simple_animal/construct,
 		if(source.data["blood_colour"])
 			B.basecolor = source.data["blood_colour"]
 			B.update_icon()
-			world << "Setting colour"
 
 		// Update blood information.
 		if(source.data["blood_DNA"])
@@ -319,36 +321,15 @@ var/list/wierd_mobs_inclusive = list( /mob/living/simple_animal/construct,
 			world << "Setting DNA 1"
 			if(source.data["blood_type"])
 				B.blood_DNA[source.data["blood_DNA"]] = source.data["blood_type"]
-				world << "Setting DNA 2a"
 			else
 				B.blood_DNA[source.data["blood_DNA"]] = "O+"
-				world << "Setting DNA 2b"
 
 		// Update virus information.
 		if(source.data["virus2"])
 			B.virus2 = virus_copylist(source.data["virus2"])
-			world << "copying virus"
 
 		B.fluorescent  = 0
 		B.invisibility = 0
-/*
-
-/turf/simulated/add_blood(mob/living/carbon/human/M as mob)
-	if (!..())
-		return 0
-
-	if(istype(M))
-		for(var/obj/effect/decal/cleanable/blood/B in contents)
-			if(!B.blood_DNA)
-				B.blood_DNA = list()
-			if(!B.blood_DNA[M.dna.unique_enzymes])
-				B.blood_DNA[M.dna.unique_enzymes] = M.dna.b_type
-				B.virus2 = virus_copylist(M.virus2)
-			return 1 //we bloodied the floor
-		blood_splatter(src,M.get_blood(M.vessel),1)
-		return 1 //we bloodied the floor
-	return 0
-*/
 
 
 
@@ -369,7 +350,7 @@ var/list/wierd_mobs_inclusive = list( /mob/living/simple_animal/construct,
 		return vessel
 
 
-/proc/turf_hasblood(/var/turf/test)
+/proc/turf_hasblood(var/turf/test)
 	for (var/obj/effect/decal/cleanable/blood/b in test)
 		return 1
 	return 0

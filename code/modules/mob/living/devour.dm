@@ -191,8 +191,7 @@ var/list/wierd_mobs_inclusive = list( /mob/living/simple_animal/construct,
 				handle_devour_mess(src, victim, vessel)
 			if (victim.cloneloss >= victim_maxhealth)
 				src.visible_message("[src] finishes devouring [victim]","You finish devouring [victim]")
-				if (victim.mob_size >= 3)
-					handle_devour_mess(src, victim, vessel, 1)
+				handle_devour_mess(src, victim, vessel, 1)
 				qdel(victim)
 				break
 		else
@@ -271,7 +270,7 @@ var/list/wierd_mobs_inclusive = list( /mob/living/simple_animal/construct,
 
 	return mobtypes
 
-/proc/handle_devour_mess(var/mob/user, var/mob/victim, var/datum/reagents/vessel, var/finish = 0)
+/proc/handle_devour_mess(var/mob/user, var/mob/living/victim, var/datum/reagents/vessel, var/finish = 0)
 	//The maximum number of blood placements is equal to the mob size of the victim
 	//We will use one blood placement on each of the following, in this order
 		//Bloodying the victim's tile
@@ -280,28 +279,31 @@ var/list/wierd_mobs_inclusive = list( /mob/living/simple_animal/construct,
 	//After that, we will allocate the remaining blood placements to random tiles around the victim and attacker, until either all are used or victim is dead
 	var/datum/reagent/blood/B = vessel.reagent_list[/datum/reagent/blood]
 	if (!turf_hasblood(get_turf(victim)))
-		world << "Victimloc has no blood, adding it +[vessel]"
 		devour_add_blood(victim, get_turf(victim), vessel)
 		return 1
 
 	else if (istype(user, /mob/living/carbon/human) && !user.blood_DNA)
-		world << "Attackerhands has no blood, adding it"
 		//if this blood isn't already in the list, add it
 		user.blood_DNA = list(B.data["blood_DNA"])
 		user.blood_color = B.data["blood_color"]
 		user.update_inv_gloves()	//handles bloody hands overlays and updating
 		user.verbs += /mob/living/carbon/human/proc/bloody_doodle
-		return 1 //we applied blood to the item
+		return 1
 
 	else if (!turf_hasblood(get_turf(user)))
-		world << "Attackerloc has no blood, adding it"
 		devour_add_blood(victim, get_turf(user), vessel)
 		return 1
 
 	if (finish)
-		world << "Adding gibs"
-		//var/obj/effect/decal/cleanable/blood/gibs/gib =
-		new /obj/effect/decal/cleanable/blood/gibs(get_turf(victim))
+		//A bigger victim makes more gibs
+		if (victim.mob_size >= 3)
+			new /obj/effect/decal/cleanable/blood/gibs(get_turf(victim))
+		if (victim.mob_size >= 5)
+			new /obj/effect/decal/cleanable/blood/gibs(get_turf(victim))
+		if (victim.mob_size >= 7)
+			new /obj/effect/decal/cleanable/blood/gibs(get_turf(victim))
+		if (victim.mob_size >= 9)
+			new /obj/effect/decal/cleanable/blood/gibs(get_turf(victim))
 		return 1
 	return 0
 

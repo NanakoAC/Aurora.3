@@ -50,7 +50,7 @@
 		if(PARALYZE)
 			Paralyse(effect/(blocked+1))
 		if(AGONY)
-			halloss += effect // Useful for objects that cause "subdual" damage. PAIN!
+			adjustHalLoss(effect) //Changed this to use the wrapper function, it shouldn't directly alter the value
 		if(IRRADIATE)
 			var/rad_protection = getarmor(null, "rad")/100
 			radiation += max((1-rad_protection)*effect/(blocked+1),0)//Rads auto check armor
@@ -61,11 +61,14 @@
 			eye_blurry = max(eye_blurry,(effect/(blocked+1)))
 		if(DROWSY)
 			drowsyness = max(drowsyness,(effect/(blocked+1)))
+		if(INCINERATE)
+			adjust_fire_stacks(effect/(blocked+1))
+			IgniteMob()
 	updatehealth()
 	return 1
 
 
-/mob/living/proc/apply_effects(var/stun = 0, var/weaken = 0, var/paralyze = 0, var/irradiate = 0, var/stutter = 0, var/eyeblur = 0, var/drowsy = 0, var/agony = 0, var/blocked = 0)
+/mob/living/proc/apply_effects(var/stun = 0, var/weaken = 0, var/paralyze = 0, var/irradiate = 0, var/stutter = 0, var/eyeblur = 0, var/drowsy = 0, var/agony = 0, var/incinerate = 0, var/blocked = 0)
 	if(blocked >= 2)	return 0
 	if(stun)		apply_effect(stun, STUN, blocked)
 	if(weaken)		apply_effect(weaken, WEAKEN, blocked)
@@ -75,4 +78,5 @@
 	if(eyeblur)		apply_effect(eyeblur, EYE_BLUR, blocked)
 	if(drowsy)		apply_effect(drowsy, DROWSY, blocked)
 	if(agony)		apply_effect(agony, AGONY, blocked)
+	if(incinerate) apply_effect(incinerate, INCINERATE, blocked)
 	return 1

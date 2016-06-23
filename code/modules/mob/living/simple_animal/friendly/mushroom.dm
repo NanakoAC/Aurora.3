@@ -17,6 +17,7 @@
 	var/datum/seed/seed
 	var/harvest_time
 	var/min_explode_time = 1200
+	mob_size = 2
 
 /mob/living/simple_animal/mushroom/New()
 	..()

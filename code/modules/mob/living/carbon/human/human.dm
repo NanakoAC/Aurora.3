@@ -7,6 +7,7 @@
 
 	var/list/hud_list[10]
 	var/embedded_flag	  //To check if we've need to roll for damage on movement while an item is imbedded in us.
+	mob_size = 9//Based on average weight of a human
 
 /mob/living/carbon/human/New(var/new_loc, var/new_species = null)
 
@@ -80,7 +81,8 @@
 
 		if(mind)
 			if(mind.vampire)
-				stat("Blood", mind.vampire.bloodusable)
+				stat("Usable Blood", mind.vampire.blood_usable)
+				stat("Total Blood", mind.vampire.blood_total)
 			if(mind.changeling)
 				stat("Chemical Storage", mind.changeling.chem_charges)
 				stat("Genetic Damage Time", mind.changeling.geneticdamage)

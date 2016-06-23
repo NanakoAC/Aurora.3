@@ -91,7 +91,7 @@
 		handle_random_events()
 
 		//stuff in the stomach
-		handle_stomach()
+		handle_stomach()//This function is in devour.dm
 
 		handle_shock()
 
@@ -260,7 +260,7 @@
 
 	proc/handle_mutations_and_radiation()
 
-		if(species.flags & IS_SYNTHETIC || species.name == "Vaurca") //Robots/bugs don't suffer from mutations or radloss.
+		if(species.flags & IS_SYNTHETIC || species.name == "Vaurca") //Robots & bugs don't suffer from mutations or radloss.
 			return
 
 		if(getFireLoss())
@@ -421,7 +421,7 @@
 				safe_pressure_min *= 1.25
 
 		var/safe_exhaled_max = 10
-		var/safe_toxins_max = 0.005
+		var/safe_toxins_max = 0.2
 		var/SA_para_min = 1
 		var/SA_sleep_min = 5
 		var/inhaled_gas_used = 0
@@ -438,6 +438,13 @@
 
 		var/failed_inhale = 0
 		var/failed_exhale = 0
+
+		if(species.has_organ["breathing apparatus"])
+			var/obj/item/organ/vaurca/breathingapparatus/L = internal_organs_by_name["breathing apparatus"]
+			if(isnull(L))
+				poison_type = null
+			else if(L.is_broken())
+				poison_type = "oxygen" //if Vaurca breathing apparatus breaks, oxygen becomes poisonous.
 
 		if(species.breath_type)
 			breath_type = species.breath_type
@@ -519,7 +526,7 @@
 		if(toxins_pp > safe_toxins_max)
 			var/ratio = (poison/safe_toxins_max) * 10
 			if(reagents)
-				reagents.add_reagent("toxin", Clamp(ratio, MIN_TOXIN_DAMAGE, MAX_TOXIN_DAMAGE))
+				reagents.add_reagent(poison_type, Clamp(ratio, MIN_TOXIN_DAMAGE, MAX_TOXIN_DAMAGE))
 				breath.adjust_gas(poison_type, -poison/6, update = 0) //update after
 			phoron_alert = max(phoron_alert, 1)
 		else
@@ -712,7 +719,6 @@
 
 		return
 
-	/*
 	proc/adjust_body_temperature(current, loc_temp, boost)
 		var/temperature = current
 		var/difference = abs(current-loc_temp)	//get difference
@@ -729,7 +735,6 @@
 			temperature = max(loc_temp, temperature-change)
 		temp_change = (temperature - current)
 		return temp_change
-	*/
 
 	proc/stabilize_body_temperature()
 		if (species.flags & IS_SYNTHETIC)
@@ -900,43 +905,6 @@
 
 		if(status_flags & GODMODE)	return 0	//godmode
 
-		var/obj/item/organ/diona/node/light_organ = locate() in internal_organs
-		if(light_organ && !light_organ.is_broken())
-			var/light_amount = 0 //how much light there is in the place, affects receiving nutrition and healing
-			if(isturf(loc)) //else, there's considered to be no light
-				var/turf/T = loc
-				var/atom/movable/lighting_overlay/L = locate(/atom/movable/lighting_overlay) in T
-				if(L)
-					light_amount = min(10,L.lum_r + L.lum_g + L.lum_b) - 2 //hardcapped so it's not abused by having a ton of flashlights
-				else
-					light_amount =  1
-			nutrition += light_amount
-			traumatic_shock -= light_amount
-
-			if(species.flags & IS_PLANT)
-				if(nutrition > 450)
-					nutrition = 450
-				if(light_amount >= 3) //if there's enough light, heal
-					adjustBruteLoss(-(round(light_amount/2)))
-					adjustFireLoss(-(round(light_amount/2)))
-					adjustToxLoss(-(light_amount))
-					adjustOxyLoss(-(light_amount))
-					//TODO: heal wounds, heal broken limbs.
-
-		if(species.light_dam)
-			var/light_amount = 0
-			if(isturf(loc))
-				var/turf/T = loc
-				var/atom/movable/lighting_overlay/L = locate(/atom/movable/lighting_overlay) in T
-				if(L)
-					light_amount = L.lum_r + L.lum_g + L.lum_b //hardcapped so it's not abused by having a ton of flashlights
-				else
-					light_amount =  10
-			if(light_amount > species.light_dam) //if there's enough light, start dying
-				take_overall_damage(1,1)
-			else //heal in the dark
-				heal_overall_damage(1,1)
-
 		// nutrition decrease
 		if (nutrition > 0 && stat != 2)
 			nutrition = max (0, nutrition - HUNGER_FACTOR)
@@ -948,10 +916,7 @@
 			if(overeatduration > 1)
 				overeatduration -= 2 //doubled the unfat rate
 
-		if(species.flags & IS_PLANT && (!light_organ || light_organ.is_broken()))
-			if(nutrition < 200)
-				take_overall_damage(2,0)
-				traumatic_shock++
+
 
 		if(!(species.flags & IS_SYNTHETIC)) handle_trace_chems()
 
@@ -1122,7 +1087,7 @@
 	proc/handle_regular_hud_updates()
 		if(!overlays_cache)
 			overlays_cache = list()
-			overlays_cache.len = 23
+			overlays_cache.len = 24
 			overlays_cache[1] = image('icons/mob/screen1_full.dmi', "icon_state" = "passage1")
 			overlays_cache[2] = image('icons/mob/screen1_full.dmi', "icon_state" = "passage2")
 			overlays_cache[3] = image('icons/mob/screen1_full.dmi', "icon_state" = "passage3")
@@ -1146,6 +1111,7 @@
 			overlays_cache[21] = image('icons/mob/screen1_full.dmi', "icon_state" = "brutedamageoverlay4")
 			overlays_cache[22] = image('icons/mob/screen1_full.dmi', "icon_state" = "brutedamageoverlay5")
 			overlays_cache[23] = image('icons/mob/screen1_full.dmi', "icon_state" = "brutedamageoverlay6")
+			overlays_cache[24] = image('icons/mob/screen1_full.dmi', "icon_state" = "frenzyoverlay")
 
 		if(hud_updateflag) // update our mob's hud overlays, AKA what others see flaoting above our head
 			handle_hud_list()
@@ -1213,6 +1179,12 @@
 						I = overlays_cache[17]
 				damageoverlay.overlays += I
 
+			// Vampire frenzy overlay.
+			if (mind.vampire)
+				if (mind.vampire.status & VAMP_FRENZIED)
+					var/image/I = overlays_cache[24]
+					damageoverlay.overlays += I
+
 			//Fire and Brute damage overlay (BSSR)
 			var/hurtdamage = src.getBruteLoss() + src.getFireLoss() + damageoverlaytemp
 			damageoverlaytemp = 0 // We do this so we can detect if someone hits us or not.
@@ -1261,14 +1233,6 @@
 			see_in_dark = species.darksight
 			see_invisible = see_in_dark>2 ? SEE_INVISIBLE_LEVEL_ONE : SEE_INVISIBLE_LIVING
 
-			if(mind && mind.vampire)
-				if((VAMP_VISION in mind.vampire.powers) && !(VAMP_FULL in mind.vampire.powers))
-					sight |= SEE_MOBS
-				if((VAMP_FULL in mind.vampire.powers))
-					sight |= SEE_TURFS|SEE_MOBS|SEE_OBJS
-					see_in_dark = 8
-					see_invisible = SEE_INVISIBLE_OBSERVER_NOLIGHTING
-
 			if(XRAY in mutations)
 				sight |= SEE_TURFS|SEE_MOBS|SEE_OBJS
 				see_in_dark = 8
@@ -1302,7 +1266,7 @@
 						if(2)	healths.icon_state = "health7"
 						else
 							//switch(health - halloss)
-							switch(100 - ((species && species.flags & NO_PAIN & !IS_SYNTHETIC) ? 0 : traumatic_shock))
+							switch(100 - traumatic_shock)
 								if(100 to INFINITY)		healths.icon_state = "health0"
 								if(80 to 100)			healths.icon_state = "health1"
 								if(60 to 80)			healths.icon_state = "health2"
@@ -1465,22 +1429,7 @@
 			if(L && L.lum_r + L.lum_g + L.lum_b == 0)
 				playsound_local(src,pick(scarySounds),50, 1, -1)
 
-	proc/handle_stomach()
-		spawn(0)
-			for(var/mob/living/M in stomach_contents)
-				if(M.loc != src)
-					stomach_contents.Remove(M)
-					continue
-				if(istype(M, /mob/living/carbon) && stat != 2)
-					if(M.stat == 2)
-						M.death(1)
-						stomach_contents.Remove(M)
-						qdel(M)
-						continue
-					if(air_master.current_cycle%3==1)
-						if(!(M.status_flags & GODMODE))
-							M.adjustBruteLoss(5)
-						nutrition += 10
+
 
 	proc/handle_changeling()
 		if(mind && mind.changeling)
@@ -1563,10 +1512,14 @@
 				if(temp <= PULSE_FAST && temp >= PULSE_NONE)
 					temp++
 			if(R.id in heartstopper) //To avoid using fakedeath
-				temp = PULSE_NONE
+				var/obj/item/organ/heart/H = internal_organs_by_name["heart"]
+				if(rand(0,6) == 3)
+					H.take_damage(5)
 			if(R.id in cheartstopper) //Conditional heart-stoppage
 				if(R.volume >= R.overdose)
-					temp = PULSE_NONE
+					var/obj/item/organ/heart/H = internal_organs_by_name["heart"]
+					if(rand(0,6) == 3)
+						H.take_damage(5)
 
 		return temp
 
@@ -1636,7 +1589,7 @@
 		else if(foundVirus)
 			holder.icon_state = "hudill"
 	/*	else if(has_brain_worms())
-			var/mob/living/simple_animal/borer/B = has_brain_worms() //Cotrical borer disable
+			var/mob/living/simple_animal/borer/B = has_brain_worms()
 			if(B.controlling)
 				holder.icon_state = "hudbrainworm"
 			else

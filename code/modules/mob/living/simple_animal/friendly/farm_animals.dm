@@ -13,13 +13,14 @@
 	turns_per_move = 5
 	see_in_dark = 6
 	meat_type = /obj/item/weapon/reagent_containers/food/snacks/meat
-	meat_amount = 4
+	meat_amount = 6
+	mob_size = 4.5//weight based on Chanthangi goats
 	response_help  = "pets"
 	response_disarm = "gently pushes aside"
 	response_harm   = "kicks"
 	faction = "goat"
 	attacktext = "kicked"
-	health = 40
+	maxHealth = 40
 	melee_damage_lower = 1
 	melee_damage_upper = 5
 	var/datum/reagents/udder = null
@@ -55,9 +56,9 @@
 
 		if(!pulledby)
 			var/obj/effect/plant/food
-			food = locate(/obj/effect/plant) in oview(5,loc)	
+			food = locate(/obj/effect/plant) in oview(5,loc)
 			if(food)
-				var/step = get_step_to(src, food, 0) 	
+				var/step = get_step_to(src, food, 0)
 				Move(step)
 
 /mob/living/simple_animal/hostile/retaliate/goat/Retaliate()
@@ -98,13 +99,14 @@
 	turns_per_move = 5
 	see_in_dark = 6
 	meat_type = /obj/item/weapon/reagent_containers/food/snacks/meat
-	meat_amount = 6
+	meat_amount = 30//Cows are huge, should be worth a lot of meat
 	response_help  = "pets"
 	response_disarm = "gently pushes aside"
 	response_harm   = "kicks"
 	attacktext = "kicked"
-	health = 50
+	maxHealth = 250//more robust because large
 	var/datum/reagents/udder = null
+	mob_size = 20//based on mass of holstein fresian dairy cattle, what the sprite is based on
 
 /mob/living/simple_animal/cow/New()
 	udder = new(50)
@@ -164,10 +166,11 @@
 	response_disarm = "gently pushes aside"
 	response_harm   = "kicks"
 	attacktext = "kicked"
-	health = 1
+	maxHealth = 1
 	var/amount_grown = 0
 	pass_flags = PASSTABLE | PASSGRILLE
 	small = 1
+	mob_size = 0.75//just a rough estimate, the real value should be way lower
 
 /mob/living/simple_animal/chick/New()
 	..()
@@ -205,11 +208,12 @@ var/global/chicken_count = 0
 	response_disarm = "gently pushes aside"
 	response_harm   = "kicks"
 	attacktext = "kicked"
-	health = 10
+	maxHealth = 10
 	var/eggsleft = 0
 	var/body_color
 	pass_flags = PASSTABLE
 	small = 1
+	mob_size = 2
 
 /mob/living/simple_animal/chicken/New()
 	..()

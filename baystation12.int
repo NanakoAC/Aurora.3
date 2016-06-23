@@ -1,6 +1,11 @@
 // BEGIN_INTERNALS
 /*
-MAP_ICON_TYPE: 0
+LAST_COMPILE_TIME: 1464918984
+DIR: .git .git\logs .git\logs\refs .git\logs\refs\heads .git\refs .git\refs\heads code code\datums code\datums\diseases code\datums\diseases\advance code\datums\diseases\advance\symptoms code\game code\game\machinery code\game\machinery\computer code\game\objects code\game\objects\items code\game\objects\items\stacks code\modules code\modules\client code\modules\mob code\modules\mob\living code\modules\mob\living\carbon code\modules\mob\living\carbon\alien code\modules\mob\living\carbon\alien\diona code\modules\mob\living\carbon\human code\modules\mob\living\carbon\human\species code\modules\mob\living\carbon\human\species\station code\modules\mob\living\carbon\human\species\xenomorphs code\modules\mob\living\silicon code\modules\mob\living\silicon\robot code\modules\organs code\modules\power code\modules\reagents code\modules\reagents\Chemistry-Reagents code\ZAS 
 AUTO_FILE_DIR: OFF
+MAP_ICON_TYPE: 0
+LAST_COMPILE_VERSION: 509.1319
+WINDOW: code\modules\mob\living\carbon\human\human.dm;code\modules\mob\living\carbon\alien\diona\diona_nymph.dm;code\modules\mob\living\carbon\human\diona_gestalt.dm;code\modules\mob\living\carbon\diona_base.dm;code\modules\organs\blood.dm;code\modules\mob\living\carbon\human\human_organs.dm;code\modules\organs\organ.dm;code\modules\mob\living\carbon\human\life.dm;code\modules\mob\living\carbon\human\human_defines.dm;code\modules\mob\living\carbon\human\species\station\station.dm;code\modules\organs\organ_external.dm;code\modules\mob\living\living.dm;code\modules\client\preferences.dm;code\modules\mob\living\carbon\breathe.dm;code\modules\organs\wound.dm;code\modules\organs\pain.dm;code\modules\mob\living\carbon\human\human_damage.dm;code\game\objects\items\stacks\medical.dm;code\modules\mob\living\silicon\robot\component.dm;code\modules\organs\robolimbs.dm;code\modules\organs\organ_internal.dm;code\modules\mob\living\carbon\give.dm;code\modules\mob\living\carbon\human\emote.dm
+FILE: code\modules\mob\living\living.dm
 */
 // END_INTERNALS

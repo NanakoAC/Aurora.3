@@ -70,7 +70,7 @@
 
 		if(istype(H.gloves, /obj/item/clothing/gloves/boxing/hologlove))
 			H.do_attack_animation(src)
-			var/damage = rand(0, 9)
+			var/damage = rand(0, 9)* (user.strength * 0.1)
 			if(!damage)
 				playsound(loc, 'sound/weapons/punchmiss.ogg', 25, 1, -1)
 				visible_message("\red <B>[H] has attempted to punch [src]!</B>")
@@ -78,8 +78,7 @@
 			var/obj/item/organ/external/affecting = get_organ(ran_zone(H.zone_sel.selecting))
 			var/armor_block = run_armor_check(affecting, "melee")
 
-			if(HULK in H.mutations)
-				damage += 5
+
 
 			playsound(loc, "punch", 25, 1, -1)
 
@@ -263,16 +262,9 @@
 
 			var/real_damage = rand_damage
 			real_damage += attack.get_unarmed_damage(H)
-			real_damage *= damage_multiplier
-			rand_damage *= damage_multiplier
-			if(HULK in H.mutations)
-				real_damage *= 2 // Hulks do twice the damage
-				rand_damage *= 2
+			real_damage *= damage_multiplier * (user.strength * 0.1)
 
 			real_damage = max(1, real_damage)
-			if(H.gloves && istype(H.gloves,/obj/item/clothing/gloves/force))
-				var/obj/item/clothing/gloves/force/X = H.gloves
-				real_damage *= X.amplification
 			var/armour = run_armor_check(affecting, "melee")
 			// Apply additional unarmed effects.
 			attack.apply_effects(H, src, armour, rand_damage, hit_zone)

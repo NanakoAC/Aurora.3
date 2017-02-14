@@ -42,8 +42,8 @@
 	return
 
 /obj/machinery/optable/attack_hand(mob/user as mob)
-	if (HULK in usr.mutations)
-		visible_message("<span class='danger'>\The [usr] destroys \the [src]!</span>")
+	if (user.strength >= 18 && user.a_intent == I_HURT)
+		visible_message("<span class='danger'>\The [user] destroys \the [src]!</span>")
 		src.density = 0
 		qdel(src)
 	return

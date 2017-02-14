@@ -182,6 +182,9 @@
 	if (vampire.frenzy > 0)
 		vampire.frenzy--
 
+
+
+
 /mob/proc/vampire_start_frenzy(var/force_frenzy = 0)
 	var/datum/vampire/vampire = mind.vampire
 
@@ -194,8 +197,10 @@
 		vampire.status |= VAMP_FRENZIED
 		visible_message("<span class='danger'>A dark aura manifests itself around [src.name], their eyes turning red and their composure changing to be more beast-like.</span>", "<span class='danger'>You can resist no longer. The power of the Veil takes control over your mind: you are unable to speak or think. In people, you see nothing but prey to be feasted upon. You are reduced to an animal.</span>")
 
-		mutations.Add(HULK)
-		update_mutations()
+
+		add_modifier(/datum/modifier/vamp_frenzy, MODIFIER_CUSTOM, _check_interval = 10, override = MODIFIER_OVERRIDE_DENY)
+		//mutations.Add(HULK)
+		//update_mutations()
 
 		sight |= SEE_MOBS
 
@@ -242,3 +247,43 @@
 	vampire_check_frenzy()
 
 	return
+
+
+
+//Modifier which handles vampire frenzying
+/datum/modifier/vamp_frenzy
+	var/strength_added = 0
+	var/cost_added = 0
+	var/regen_added = 0
+
+/datum/modifier/vamp_frenzy/activate()
+	..()
+	if (isliving(target))
+		var/mob/living/L = target
+
+		strength_added = 8
+		L.strength += 8
+
+		cost_added = -0.45
+		L.sprint_cost_factor += cost_added
+
+		regen_added = 5
+		L.stamina_recovery += regen_added
+
+
+
+/datum/modifier/vamp_frenzy/deactivate()
+	..()
+	if (isliving(target))
+		var/mob/living/L = target
+		L.sprint_cost_factor -= cost_added
+		L.stamina_recovery -= regen_added
+		L.strength -= strength_added
+
+
+//Deactivates if the vampire stops frenzying, or stops being a vampire
+/datum/modifier/vamp_frenzy/custom_validity()
+	.=0
+	if (target.mind && target.mind.vampire)
+		if ((target.vampire.status & VAMP_FRENZIED))
+			return 1

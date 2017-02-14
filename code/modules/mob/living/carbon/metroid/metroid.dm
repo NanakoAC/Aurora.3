@@ -278,12 +278,11 @@
 
 		else
 
-			var/damage = rand(1, 9)
+			var/damage = rand(1, 9)*(M.strength*0.1)
 
 			attacked += 10
 			if (prob(90))
-				if (HULK in M.mutations)
-					damage += 5
+				if (M.strength >= 14)
 					if(Victim || Target)
 						Victim = null
 						Target = null

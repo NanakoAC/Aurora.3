@@ -66,6 +66,11 @@
 	var/min_walk_delay = 0//When move intent is walk, movedelay is clamped to this value as a lower bound
 	var/exhaust_threshold = 50
 
+
+	//Attributes, used for many things and influenced by many things
+	var/strength = 10
+	//TODO in future: Add dexterity, agility, endurance and intelligence when the time is right and mechanics need them
+
 	var/move_delay_mod = 0//Added to move delay, used for calculating movement speeds. Provides a centralised value for modifiers to alter
 
 	var/total_radiation	// DON'T MODIFY THIS DIRECTLY. USE apply_radiation()!

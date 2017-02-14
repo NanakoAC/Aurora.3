@@ -140,10 +140,12 @@
 	activate(var/mob/M, var/connected, var/flags)
 		..(M,connected,flags)
 		M.pass_flags |= 1
+		M.size_multiplier = 0.75
 
 	deactivate(var/mob/M, var/connected, var/flags)
 		..(M,connected,flags)
 		M.pass_flags &= ~1 //This may cause issues down the track, but offhand I can't think of any other way for humans to get passtable short of varediting so it should be fine. ~Z
+		M.size_multiplier = 1
 
 /datum/dna/gene/basic/hulk
 	name="Hulk"
@@ -159,12 +161,19 @@
 			return 0
 		return ..(M,flags)
 
-	OnDrawUnderlays(var/mob/M,var/g,var/fat)
-		if(fat)
-			return "hulk_[fat]_s"
-		else
-			return "hulk_[g]_s"
-		return 0
+	activate(var/mob/M, var/connected, var/flags)
+		world << "Hulk activated!"
+		..(M,connected,flags)
+		M.size_multiplier = 1.25
+		M.strength += 10
+
+
+	deactivate(var/mob/M, var/connected, var/flags)
+		..(M,connected,flags)
+		M.size_multiplier = 1
+		M.strength -= 10
+
+	//No more green skin
 
 	OnMobLife(var/mob/living/carbon/human/M)
 		if(!istype(M)) return

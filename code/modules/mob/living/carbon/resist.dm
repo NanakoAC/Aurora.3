@@ -104,10 +104,7 @@
 		update_inv_legcuffed()
 
 /mob/living/carbon/proc/can_break_cuffs()
-	if(HULK in mutations)
-		return 1
-
-	if(src.gender in src.species.breakcuffs)
+	if(strength >= 13)
 		return 1
 
 	return 0
@@ -127,8 +124,7 @@
 			"<span class='warning'>You successfully break your [handcuffed.name].</span>"
 			)
 
-		if((get_species() == "Unathi") || (HULK in mutations))
-			say(pick("RAAAAAAAARGH!", "HNNNNNNNNNGGGGGGH!", "GWAAAAAAAARRRHHH!", "NNNNNNNNGGGGGGGGHH!", "AAAAAAARRRGH!" ))
+		say(pick("RAAAAAAAARGH!", "HNNNNNNNNNGGGGGGH!", "GWAAAAAAAARRRHHH!", "NNNNNNNNGGGGGGGGHH!", "AAAAAAARRRGH!" ))
 
 		qdel(handcuffed)
 		handcuffed = null

@@ -273,7 +273,6 @@
 			heal_organ_damage(0,1)
 
 	// DNA2 - Gene processing.
-	// The HULK stuff that was here is now in the hulk gene.
 	for(var/datum/dna/gene/gene in dna_genes)
 		if(!gene.block)
 			continue
@@ -1461,7 +1460,7 @@
 
 	if (BITTEST(hud_updateflag, ID_HUD) && hud_list[ID_HUD])
 		var/image/holder = hud_list[ID_HUD]
-		
+
 		//The following function is found in code/defines/procs/hud.dm
 		holder.icon_state = get_sec_hud_icon(src)
 		hud_list[ID_HUD] = holder

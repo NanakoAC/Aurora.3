@@ -1040,8 +1040,7 @@ var/list/sacrificed = list()
 					if(iscarbon(L))
 						var/mob/living/carbon/C = L
 						flick("e_flash", C.flash)
-						if(C.stuttering < 1 && (!(HULK in C.mutations)))
-							C.stuttering = 1
+						C.stuttering += 10
 						C.Weaken(1)
 						C.Stun(1)
 						C.show_message("<span class='danger'>The rune explodes in a bright flash.</span>", 3)
@@ -1069,8 +1068,7 @@ var/list/sacrificed = list()
 					else if(iscarbon(T))
 						var/mob/living/carbon/C = T
 						flick("e_flash", C.flash)
-						if (!(HULK in C.mutations))
-							C.silent += 15
+						C.silent += 15
 						C.Weaken(25)
 						C.Stun(25)
 						admin_attack_log(usr, C, "Used a stun rune.", "Was victim of a stun rune.", "used a stun rune on")

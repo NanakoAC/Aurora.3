@@ -19,6 +19,8 @@
 	var/shardtype = /obj/item/weapon/material/shard
 	var/glasstype = null // Set this in subtypes. Null is assumed strange or otherwise impossible to dismantle, such as for shuttle glass.
 	var/silicate = 0 // number of units of silicate
+	var/smash_strength = 16
+	var/damage_strength = 12
 
 /obj/structure/window/examine(mob/user)
 	. = ..(user)
@@ -172,13 +174,7 @@
 
 /obj/structure/window/attack_hand(mob/user as mob)
 	user.setClickCooldown(DEFAULT_ATTACK_COOLDOWN)
-	if(HULK in user.mutations)
-		user.say(pick(";RAAAAAAAARGH!", ";HNNNNNNNNNGGGGGGH!", ";GWAAAAAAAARRRHHH!", "NNNNNNNNGGGGGGGGHH!", ";AAAAAAARRRGH!"))
-		user.visible_message("<span class='danger'>[user] smashes through [src]!</span>")
-		user.do_attack_animation(src)
-		shatter()
-
-	else if (usr.a_intent == I_HURT)
+	if (usr.a_intent == I_HURT)
 
 		if (istype(usr,/mob/living/carbon/human))
 			var/mob/living/carbon/human/H = usr
@@ -186,8 +182,19 @@
 				attack_generic(H,25)
 				return
 
+		if (user.strength >= smash_strength)
+			if (prob(30))
+				user.say(pick(";RAAAAAAAARGH!", ";HNNNNNNNNNGGGGGGH!", ";GWAAAAAAAARRRHHH!", "NNNNNNNNGGGGGGGGHH!", ";AAAAAAARRRGH!"))
+			user.visible_message("<span class='danger'>[user] smashes through [src]!</span>")
+			user.do_attack_animation(src)
+			shatter()
+			return
+		else if (user.strength >= damage_strength)
+			attack_generic(user,user.strength*0.8)
+		else
+			user.do_attack_animation(src)
+
 		playsound(src.loc, 'sound/effects/glassknock.ogg', 90, 1)
-		user.do_attack_animation(src)
 		usr.visible_message("<span class='danger'>\The [usr] bangs against \the [src]!</span>",
 							"<span class='danger'>You bang against \the [src]!</span>",
 							"You hear a banging sound.")
@@ -200,7 +207,7 @@
 
 /obj/structure/window/attack_generic(var/mob/user, var/damage)
 	user.setClickCooldown(DEFAULT_ATTACK_COOLDOWN)
-	if(damage >= 10)
+	if(damage >= 5)
 		visible_message("<span class='danger'>[user] smashes into [src]!</span>")
 		take_damage(damage)
 	else

@@ -13,8 +13,8 @@
 	..()
 
 /obj/structure/attack_hand(mob/user)
-	if(breakable)
-		if(HULK in user.mutations)
+	if(breakable && usr.a_intent == I_HURT)
+		if(user.strength >= 18)
 			user.say(pick(";RAAAAAAAARGH!", ";HNNNNNNNNNGGGGGGH!", ";GWAAAAAAAARRRHHH!", "NNNNNNNNGGGGGGGGHH!", ";AAAAAAARRRGH!" ))
 			attack_generic(user,1,"smashes")
 		else if(istype(user,/mob/living/carbon/human))

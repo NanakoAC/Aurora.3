@@ -41,10 +41,8 @@
 	if(shock(user, 70))
 		return
 
-	if(HULK in user.mutations)
-		damage_dealt += 5
-	else
-		damage_dealt += 1
+	if (user.strength > 10)
+		damage_dealt += (user.strength - 10)*0.1
 
 	attack_generic(user,damage_dealt,attack_message)
 
@@ -64,7 +62,7 @@
 	//Flimsy grilles aren't so great at stopping projectiles. However they can absorb some of the impact
 	var/damage = Proj.get_structure_damage()
 	var/passthrough = 0
-	
+
 	if(!damage) return
 
 	//20% chance that the grille provides a bit more cover than usual. Support structure for example might take up 20% of the grille's area.

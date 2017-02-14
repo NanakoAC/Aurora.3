@@ -197,14 +197,11 @@
 	if(istype(H))
 		if(H.species.can_shred(H))
 			playsound(src.loc, 'sound/weapons/slash.ogg', 80, 1)
-			health -= rand(10, 20)
+			health -= rand(10, 20)*(user.strength*0.1)
 		else
-			health -= rand(1,3)
-
-	else if (HULK in user.mutations)
-		health = 0
+			health -= rand(1,3)*(user.strength*0.1)
 	else
-		health -= rand(5,8)
+		health -= rand(5,8)*(user.strength*0.1)
 
 	H << "<span class='danger'>You claw at the energy net.</span>"
 

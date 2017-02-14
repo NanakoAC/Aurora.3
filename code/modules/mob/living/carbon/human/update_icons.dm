@@ -1,6 +1,6 @@
 /*
 	Global associative list for caching humanoid icons.
-	Index format m or f, followed by a string of 0 and 1 to represent bodyparts followed by husk fat hulk skeleton 1 or 0.
+	Index format m or f, followed by a string of 0 and 1 to represent bodyparts followed by husk fat skeleton 1 or 0.
 	TODO: Proper documentation
 	icon_key is [species.race_key][g][husk][fat][hulk][skeleton][s_tone]
 */
@@ -235,11 +235,9 @@ var/global/list/damage_icon_parts = list()
 
 /mob/living/carbon/human/proc/update_body(var/update_icons=1)
 	var/husk_color_mod = rgb(96,88,80)
-	var/hulk_color_mod = rgb(48,224,40)
 
 	var/husk = (HUSK in src.mutations)
 	var/fat = (FAT in src.mutations)
-	var/hulk = (HULK in src.mutations)
 	var/skeleton = (SKELETON in src.mutations)
 	var/g = (gender == FEMALE ? "f" : "m")
 
@@ -287,7 +285,7 @@ var/global/list/damage_icon_parts = list()
 			else
 				icon_key += "#000000"
 
-	icon_key = "[icon_key][husk ? 1 : 0][fat ? 1 : 0][hulk ? 1 : 0][skeleton ? 1 : 0]"
+	icon_key = "[icon_key][husk ? 1 : 0][fat ? 1 : 0][skeleton ? 1 : 0]"
 	var/icon/base_icon
 	if(update_icons != 2 && human_icon_cache[icon_key])//If update_icons is 2, then we forcibly generate a new icon
 		base_icon = human_icon_cache[icon_key]
@@ -320,9 +318,7 @@ var/global/list/damage_icon_parts = list()
 		if(!skeleton)
 			if(husk)
 				base_icon.ColorTone(husk_color_mod)
-			else if(hulk)
-				var/list/tone = ReadRGB(hulk_color_mod)
-				base_icon.MapColors(rgb(tone[1],0,0),rgb(0,tone[2],0),rgb(0,0,tone[3]))
+
 
 		//Handle husk overlay.
 		if(husk && ("overlay_husk" in icon_states(species.icobase)))
@@ -413,20 +409,7 @@ var/global/list/damage_icon_parts = list()
 				add_image = 1
 	for(var/mut in mutations)
 		switch(mut)
-			/*
-			if(HULK)
-				if(fat)
-					standing.underlays	+= "hulk_[fat]_s"
-				else
-					standing.underlays	+= "hulk_[g]_s"
-				add_image = 1
-			if(COLD_RESISTANCE)
-				standing.underlays	+= "fire[fat]_s"
-				add_image = 1
-			if(TK)
-				standing.underlays	+= "telekinesishead[fat]_s"
-				add_image = 1
-			*/
+
 			if(LASER)
 				standing.overlays	+= "lasereyes_s"
 				add_image = 1

@@ -169,7 +169,11 @@ it should be avoided in favour of manual removal where possible
 
 /datum/modifier
 //Config
-	var/check_interval = 300//How often, in deciseconds, we will recheck the validity
+	var/check_interval = 300 //How often, in deciseconds, we will recheck the validity
+	var/tick_interval = 0 //How often, in deciseconds, we will run process ticks for this modifier.
+	//The default value of 0 will cause a process tick for every controller tick, every 10 deciseconds.
+	//So setting to a value between 1-10 has no effect, and in general values are effectively a multiple of 10
+
 	var/atom/target = null
 	var/atom/source = null
 	var/modifier_type = 0
@@ -191,6 +195,7 @@ it should be avoided in favour of manual removal where possible
 	var/active = 0//Whether or not the effects are currently applied
 	var/next_check = 0
 	var/last_tick = 0
+	var/next_tick = 0
 
 
 //If creation of a modifier is successful, it will return a reference to itself
@@ -272,11 +277,11 @@ it should be avoided in favour of manual removal where possible
 		last_tick = world.time
 		return 0
 
-	if (!isnull(duration))duration -= world.time - last_tick
 	if (world.time > next_check)
 		last_tick = world.time
 		return check_validity()
 	last_tick = world.time
+	next_tick = last_tick + tick_interval
 	return 1
 
 /datum/modifier/proc/check_validity()
@@ -451,3 +456,8 @@ it should be avoided in favour of manual removal where possible
 /datum/modifier/proc/custom_override(var/datum/modifier/existing)
 	qdel(src)
 	return existing
+
+/datum/modifier/proc/update_interval(var/newinterval)
+	var/diff = check_interval - newinterval
+	check_interval = newinterval
+	next_check += diff

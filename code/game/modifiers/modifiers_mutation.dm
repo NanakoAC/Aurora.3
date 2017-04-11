@@ -1,31 +1,14 @@
 /*
-A mutation is a bodily modifier designed to represent some medium-large scale, semi-permanant effect on a
-mob. Mutations are often, but not necessarily, linked with genetics. They can also be applied by magic,
-drugs, and artifacts.
+A mutation is a subclass of modifier with extended functionality and some specifics:
 
-There are two subclasses of mutations:
-	Disabilities:
-		These represent a loss in baseline functionality. Eg blindness, deafness, poor coordination. A
-		disability makes someone less capable than a normal human. In genetics disabilities are very easy
-		to apply, requiring only that any of several enzymes be out of a tolerance range.
+1. Mutations are for mobs only, this assumption is implicit
+2. Mutations have procs which fire every time the mob it's on takes certain actions.
+	Such as speaking, walking, interacting with things, etc.
+	The action is intercepted before it happens, and with a certain return var they can cause the action to be discarded
+3. Mutations track several sources that applied them, and one source can be added or removed without disabling the mutation.
+4. Because of the multiple source issue, mutations generally don't accept certain input parameters for strength/scaling, and have a flat effect. This can be overridden
 
-	Powers:
-		Powers generally represent positive things, a gain in functionality. Like super strength, or not
-		needing to breathe. Powers are generally positive and provide the subject with some advantage.
 
-		This is not a requirement, and there can be be mutations that add to the user in a bad way, like
-		cancerous tumors or malformed limbs.
-
-		The only requirement is that powers are harder to do in genetics, requiring the inverse of disabilities
-		That is, they require all of several enzymes to be IN a tolerance range. This means that gaining powers
-		through random gene modding is unlikely.
-
-An important feature of mutations is that they behave consistently, there is no room for variation.
-No vars can be passed which will scale a mutation. It works the way it works regardless of how its applied.
-Hulk will always double your strength, blind will always completely remove sight, etc.
-
-However you are free to code mutations to adapt to the target mob. Hulk doubles the strength so the stronger
-the mob was to start with, the better the result
 */
 
 
@@ -65,6 +48,11 @@ Generally no normally-accessible thing should be able to cure chronic mutations.
 like alien artifacts.
 */
 
+#define SOURCE_MENTAL	128
+//Its all in your head
+
+#define SOURCE_GENERIC	65535	//Unknown or unspecified source. This is the default. It is strongly advised to use a limited duration if using generic
+
 /datum/modifier/mutation
 	var/id = "mutation"
 	//ID is a unique identifier for this class.  Eg Blindness, hulk, deafness, etc
@@ -80,6 +68,28 @@ like alien artifacts.
 	//Durations holds the remaining time on this mutation from each source.
 	//Only one duration per source type is held.
 	//All durations on a mutation will count down every tick. When a duration hits 0 that source is removed
+
+	var/intercept_flags = 65535
+
+
+//Intercept flags. These determine what actions this mutation wants to intercept.
+#define INTERCEPT_SPEECH	0x1	//Whenever the mob says something
+#define INTERCEPT_STEP  	0x2 //Whenever the mob moves under its own power
+#define	INTERCEPT_HAND     	0x4 //Whenever the mob uses attack_hand, or attack_generic on an object
+#define INTERCEPT_LIFE      0x8 //When the mob's life ticks.
+#define INTERCEPT_DEATH		0x10
+//#define SLOT_EARS       0x10
+//#define SLOT_MASK       0x20
+//#define SLOT_HEAD       0x40
+//#define SLOT_FEET       0x80
+//#define SLOT_ID         0x100
+//#define SLOT_BELT       0x200
+//#define SLOT_BACK       0x400
+//#define SLOT_POCKET     0x800
+//#define SLOT_DENYPOCKET 0x1000
+//#define SLOT_TWOEARS    0x2000
+//#define SLOT_TIE        0x4000
+//#define SLOT_HOLSTER	0x8000
 
 /datum/modifier/mutation/handle_registration(var/override = 0)
 	var/mob/living/L = target //Get it into the subject's mutations list before activation
@@ -149,3 +159,24 @@ like alien artifacts.
 
 			//If there is no pre-existing duration, then we do nothing. Regardless of whether or not
 			//A duration was passed with this mutation. We wont overwrite a permanant effect with a temporary one
+
+
+/datum/modifier/proc/adjust_duration(var/change = 0, var/set_duration = 0)
+	for (var/v in durations)
+		if (set_duration)
+			durations[v] = change
+		else
+			durations[v] += change
+
+
+
+//Here are the mutation interception procs.
+//Each of these is called when a mob with this mutation does a certain common action
+
+
+//Speech: For modifying how the mob talks. Add stutter, capitalise things, add shouting verbs, etc.
+//Return a list in the form of text, language, verb to override these params.
+//Set the text to null or "" in order to drop the speech command
+//Return nothing to let the speech continue unmodified
+/datum/modifier/mutation/proc/on_say(var/text, var/datum/language/language, var/speechverb="says")
+	return null

@@ -55,9 +55,6 @@
 		if(IRRADIATE)
 			var/rad_protection = check_protection ? getarmor(null, "rad")/100 : 0
 			apply_radiation(max((1-rad_protection)*effect/(blocked+1),0))//Rads auto check armor
-		if(STUTTER)
-			if(status_flags & CANSTUN) // stun is usually associated with stutter
-				stuttering = max(stuttering,(effect/(blocked+1)))
 		if(EYE_BLUR)
 			eye_blurry = max(eye_blurry,(effect/(blocked+1)))
 		if(DROWSY)

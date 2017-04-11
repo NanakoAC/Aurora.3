@@ -104,7 +104,6 @@
 		src.blinded = 1
 		src.stat = 2
 
-	if (src.stuttering) src.stuttering--
 
 	if (src.eye_blind)
 		src.eye_blind--

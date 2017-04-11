@@ -183,43 +183,7 @@
 			if(equipment_tint_total >= TINT_BLIND)	// Covered eyes, heal faster
 				eye_blurry = max(eye_blurry-2, 0)
 
-	if (disabilities & EPILEPSY)
-		if ((prob(1) && paralysis < 1))
-			src << "\red You have a seizure!"
-			for(var/mob/O in viewers(src, null))
-				if(O == src)
-					continue
-				O.show_message(text("<span class='danger'>[src] starts having a seizure!</span>"), 1)
-			Paralyse(10)
-			make_jittery(1000)
-	if (disabilities & COUGHING)
-		if ((prob(5) && paralysis <= 1))
-			drop_item()
-			spawn( 0 )
-				emote("cough")
-				return
-	if (disabilities & TOURETTES)
-		speech_problem_flag = 1
-		if ((prob(10) && paralysis <= 1))
-			Stun(10)
-			spawn( 0 )
-				switch(rand(1, 3))
-					if(1)
-						emote("twitch")
-					if(2 to 3)
-						say("[prob(50) ? ";" : ""][pick("SHIT", "PISS", "FUCK", "CUNT", "COCKSUCKER", "MOTHERFUCKER", "TITS")]")
-				var/old_x = pixel_x
-				var/old_y = pixel_y
-				pixel_x += rand(-2,2)
-				pixel_y += rand(-1,1)
-				sleep(2)
-				pixel_x = old_x
-				pixel_y = old_y
-				return
-	if (disabilities & NERVOUS)
-		speech_problem_flag = 1
-		if (prob(10))
-			stuttering = max(10, stuttering)
+
 	// No. -- cib
 	/*if (getBrainLoss() >= 60 && stat != 2)
 		if (prob(3))
@@ -1298,7 +1262,7 @@
 	if(shock_stage >= 30)
 		if(shock_stage == 30) emote("me",1,"is having trouble keeping their eyes open.")
 		eye_blurry = max(2, eye_blurry)
-		stuttering = max(stuttering, 5)
+		stutter(10, SOURCE_MENTAL)
 
 	if(shock_stage == 40)
 		src << "<span class='danger'>[pick("The pain is excruciating", "Please, just end the pain", "Your whole body is going numb")]!</span>"
@@ -1531,10 +1495,6 @@
 		speech_problem_flag = 1
 	return silent
 
-/mob/living/carbon/human/handle_slurring()
-	if(..())
-		speech_problem_flag = 1
-	return slurring
 
 /mob/living/carbon/human/handle_stunned()
 	if(species.flags & NO_PAIN)
@@ -1544,10 +1504,6 @@
 		speech_problem_flag = 1
 	return stunned
 
-/mob/living/carbon/human/handle_stuttering()
-	if(..())
-		speech_problem_flag = 1
-	return stuttering
 
 /mob/living/carbon/human/handle_fire()
 	if(..())

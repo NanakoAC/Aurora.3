@@ -131,7 +131,6 @@
 			src.lying = 0
 			src.stat = 0
 
-	if (src.stuttering) src.stuttering = 0
 
 	if (src.eye_blind)
 		src.eye_blind = 0

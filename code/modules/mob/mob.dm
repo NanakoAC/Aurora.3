@@ -201,7 +201,7 @@
 
 /mob/proc/is_physically_disabled()
 	return incapacitated(INCAPACITATION_DISABLED)
-	
+
 /mob/proc/cannot_stand()
 	return incapacitated(INCAPACITATION_KNOCKDOWN)
 
@@ -1066,10 +1066,8 @@ mob/proc/yank_out_object()
 /mob/living/proc/handle_statuses()
 	handle_stunned()
 	handle_weakened()
-	handle_stuttering()
 	handle_silent()
 	handle_drugged()
-	handle_slurring()
 
 /mob/living/proc/handle_stunned()
 	if(stunned)
@@ -1081,10 +1079,6 @@ mob/proc/yank_out_object()
 		weakened = max(weakened-1,0)	//before you get mad Rockdtben: I done this so update_canmove isn't called multiple times
 	return weakened
 
-/mob/living/proc/handle_stuttering()
-	if(stuttering)
-		stuttering = max(stuttering-1, 0)
-	return stuttering
 
 /mob/living/proc/handle_silent()
 	if(silent)
@@ -1095,11 +1089,6 @@ mob/proc/yank_out_object()
 	if(druggy)
 		druggy = max(druggy-1, 0)
 	return druggy
-
-/mob/living/proc/handle_slurring()
-	if(slurring)
-		slurring = max(slurring-1, 0)
-	return slurring
 
 /mob/living/proc/handle_paralysed() // Currently only used by simple_animal.dm, treated as a special case in other mobs
 	if(paralysis)

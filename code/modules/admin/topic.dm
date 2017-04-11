@@ -1366,7 +1366,7 @@
 			M.adjustBruteLoss( min( 99 , (M.health - 1) )    )
 			M.Stun(20)
 			M.Weaken(20)
-			M.stuttering = 20
+			M.stutter(40, SOURCE_TECH)
 
 	else if(href_list["CentcommReply"])
 		var/mob/living/L = locate(href_list["CentcommReply"])

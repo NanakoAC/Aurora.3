@@ -306,7 +306,7 @@ var/controlling
 		host.emote("scream")
 
 		for(var/i=0, i<10, i++)
-			host.stuttering = 2
+			host.stutter(6, SOURCE_MENTAL)
 			sleep(50)
 			if(prob(80)) host.flash_weak_pain()
 			if(prob(10)) host.paralysis = max(host.paralysis, 2)
@@ -331,7 +331,7 @@ var/controlling
 	spawn
 		var/mob/host = src.host
 		host.druggy = max(host.druggy, 50)
-		host.slurring = max(host.slurring, 10)
+		host.slur(60, SOURCE_STRUCTURAL)
 
 		usr << "<b>You stimulate [host.name]'s brain, injecting waves of endorphines and dopamine into the tissue. They should now forget all their worries, particularly relating to you, for around a minute.</b>"
 

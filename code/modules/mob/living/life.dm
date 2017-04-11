@@ -94,7 +94,7 @@
 			stat = CONSCIOUS
 		return 1
 
-//this updates all special effects: stunned, sleeping, weakened, druggy, stuttering, etc..
+//this updates all special effects: stunned, sleeping, weakened, druggy, etc..
 /mob/living/proc/handle_status_effects()
 	if(paralysis)
 		paralysis = max(paralysis-1,0)

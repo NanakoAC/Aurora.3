@@ -446,7 +446,7 @@
 			if(B.bcell.charge > 0 && B.status == 1)
 				flick("baton_active", src)
 				user.Stun(10)
-				user.stuttering = 10
+				user.stutter(20, SOURCE_TECH)
 				user.Weaken(10)
 				if(isrobot(user))
 					var/mob/living/silicon/robot/R = user

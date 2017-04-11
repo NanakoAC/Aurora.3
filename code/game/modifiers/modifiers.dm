@@ -457,6 +457,13 @@ it should be avoided in favour of manual removal where possible
 	qdel(src)
 	return existing
 
+/datum/modifier/proc/adjust_duration(var/change = 0, var/set_duration = 0)
+	if (set_duration)
+		duration = set_duration
+	else if (duration && change)
+		duration += change
+
+
 /datum/modifier/proc/update_interval(var/newinterval)
 	var/diff = check_interval - newinterval
 	check_interval = newinterval

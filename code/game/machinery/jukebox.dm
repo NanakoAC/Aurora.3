@@ -97,7 +97,7 @@ datum/track/New(var/title_name, var/audio)
 					if(istype(H.l_ear, /obj/item/clothing/ears/earmuffs) || istype(H.r_ear, /obj/item/clothing/ears/earmuffs))
 						continue
 				M.sleeping = 0
-				M.stuttering += 20
+				M.stutter(20, SOURCE_TECH)
 				M.ear_deaf += 30
 				M.Weaken(3)
 				if(prob(30))

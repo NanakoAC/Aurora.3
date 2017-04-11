@@ -33,7 +33,7 @@ var/mob/living/carbon/human/alcohol_clumsy = 0
 		make_dizzy(target_dizziness - dizziness) // We will repeatedly set our target dizziness to a desired value based on intoxication level
 
 	if(intoxication > AE_SLURRING*SR) // Slurring
-		slurring = max(slurring, 30)
+		slur(SOURCE_CHEMICAL, 30)
 
 	if(intoxication > AE_CONFUSION*SR) // Confusion - walking in random directions
 		if (confused == 0)

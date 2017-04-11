@@ -367,8 +367,11 @@
 	//These status effects will now take a little while for the dose to build up and remove them
 	M.dizziness = max(0, M.dizziness - DP)
 	M.drowsyness = max(0, M.drowsyness - DP)
-	M.stuttering = max(0, M.stuttering - DP)
 	M.confused = max(0, M.confused - DP)
+
+	var/datum/modifier/mutation/stutter/S = M.mutations["stutter"]
+	if (istype(S))
+		S.adjust_duration(-DP)
 
 	if(M.ingested)
 		for(var/datum/reagent/R in M.ingested.reagent_list)

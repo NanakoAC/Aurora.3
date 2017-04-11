@@ -135,7 +135,7 @@
 			continue
 
 		H.Weaken(8)
-		H.stuttering = 20
+		H.stutter(40, SOURCE_MAGICAL)
 		H << "<span class='danger'>You are blinded by [src]'s glare!</span>"
 		flick("flash", H.flash)
 		victims += H
@@ -315,7 +315,7 @@
 		T << "<span class='danger'><font size='3'><b>You hear an ear piercing shriek and feel your senses go dull!</b></font></span>"
 		T.Weaken(5)
 		T.ear_deaf = 20
-		T.stuttering = 20
+		T.stutter(40, SOURCE_MAGICAL)
 		T.Stun(5)
 
 		victims += T

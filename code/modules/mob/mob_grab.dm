@@ -151,8 +151,7 @@
 			L.adjustOxyLoss(1)
 
 	if(state >= GRAB_KILL)
-		//affecting.apply_effect(STUTTER, 5) //would do this, but affecting isn't declared as mob/living for some stupid reason.
-		affecting.stuttering = max(affecting.stuttering, 5) //It will hamper your voice, being choked and all.
+		affecting.stutter(10, SOURCE_STRUCTURAL) //It will hamper your voice, being choked and all.
 		affecting.Weaken(5)	//Should keep you down unless you get help.
 		affecting.losebreath = max(affecting.losebreath + 2, 3)
 

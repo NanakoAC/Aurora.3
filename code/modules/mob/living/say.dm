@@ -87,27 +87,6 @@ proc/get_radio_key_from_channel(var/channel)
 /mob/living/proc/is_muzzled()
 	return 0
 
-/mob/living/proc/handle_speech_problems(var/message, var/verb)
-	var/list/returns[3]
-	var/speech_problem_flag = 0
-
-	if((HULK in mutations) && health >= 25 && length(message))
-		message = "[uppertext(message)]!!!"
-		verb = pick("yells","roars","hollers")
-		speech_problem_flag = 1
-	if(slurring)
-		message = slur(message)
-		verb = pick("slobbers","slurs")
-		speech_problem_flag = 1
-	if(stuttering)
-		message = stutter(message)
-		verb = pick("stammers","stutters")
-		speech_problem_flag = 1
-
-	returns[1] = message
-	returns[2] = verb
-	returns[3] = speech_problem_flag
-	return returns
 
 /mob/living/proc/handle_message_mode(message_mode, message, verb, speaking, used_radios, alt_name)
 	if(message_mode == "intercom")
@@ -124,7 +103,7 @@ proc/get_radio_key_from_channel(var/channel)
 
 /mob/living/proc/get_speech_ending(verb, var/ending)
 	if(ending=="!")
-		return pick("exclaims","shouts","yells")
+		return pick("exclaims")
 	if(ending=="?")
 		return "asks"
 	return verb
@@ -166,6 +145,19 @@ proc/get_radio_key_from_channel(var/channel)
 	else
 		speaking = get_default_language()
 
+
+	//Here we let mutations intercept it, incase they want to modify the speech or language.
+	//The mutations will be responsible for checking to ensure the language flags are valid
+	for (var/m in mutations)
+		var/datum/modifier/mutation/M = mutations[m]
+		if (M.intercept_flags & INTERCEPT_SPEECH)
+			var/list/l = M.on_say(message, speaking, verb)
+			if (l)
+				message = l[1]
+				speaking = l[2]
+				verb = l[3]
+
+
 	// This is broadcast to all mobs with the language,
 	// irrespective of distance or anything else.
 	if(speaking && (speaking.flags & HIVEMIND))
@@ -189,7 +181,7 @@ proc/get_radio_key_from_channel(var/channel)
 
 	if(!message || message == "")
 		return 0
-	
+
 	//handle nonverbal and sign languages here
 	if (speaking)
 		if (speaking.flags & NONVERBAL)

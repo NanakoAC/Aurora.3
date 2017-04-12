@@ -19,8 +19,8 @@
 	var/shardtype = /obj/item/weapon/material/shard
 	var/glasstype = null // Set this in subtypes. Null is assumed strange or otherwise impossible to dismantle, such as for shuttle glass.
 	var/silicate = 0 // number of units of silicate
-	var/smash_strength = 16
-	var/damage_strength = 12
+	var/smash_strength = 16	//Minimum strength required in order to shatter this window in a single hit
+	var/damage_strength = 12 //Minimum strength required in order to be able to damage this window without weapons
 
 /obj/structure/window/examine(mob/user)
 	. = ..(user)
@@ -418,6 +418,8 @@
 	maximal_heat = T0C + 100
 	damage_per_fire_tick = 2.0
 	maxhealth = 12.0
+	smash_strength = 12
+	damage_strength = 10
 
 /obj/structure/window/phoronbasic
 	name = "phoron window"
@@ -429,6 +431,8 @@
 	maximal_heat = T0C + 2000
 	damage_per_fire_tick = 1.0
 	maxhealth = 40.0
+	smash_strength = 15
+	damage_strength = 11
 
 /obj/structure/window/phoronreinforced
 	name = "reinforced borosilicate window"
@@ -441,7 +445,8 @@
 	maximal_heat = T0C + 4000
 	damage_per_fire_tick = 1.0 // This should last for 80 fire ticks if the window is not damaged at all. The idea is that borosilicate windows have something like ablative layer that protects them for a while.
 	maxhealth = 80.0
-
+	smash_strength = 16
+	damage_strength = 12
 
 /obj/structure/window/reinforced
 	name = "reinforced window"
@@ -452,6 +457,8 @@
 	reinf = 1
 	maximal_heat = T0C + 750
 	damage_per_fire_tick = 2.0
+	smash_strength = 15
+	damage_strength = 11
 	glasstype = /obj/item/stack/material/glass/reinforced
 
 

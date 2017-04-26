@@ -54,7 +54,7 @@
 
 	if(!..())
 		return 0
-		
+
 	setClickCooldown(DEFAULT_ATTACK_COOLDOWN)
 	A.attack_generic(src,rand(5,6),"bitten")
 
@@ -76,9 +76,9 @@
 		if (Victim == A)
 			Feedstop()
 		return
-	
+
 	setClickCooldown(DEFAULT_ATTACK_COOLDOWN)
-	
+
 	var/mob/living/M = A
 	if (istype(M))
 
@@ -108,7 +108,7 @@
 					M.visible_message("<span class='danger'>[src] has shocked [M]!</span>", "<span class='danger'>[src] has shocked you!</span>")
 					M.Weaken(power)
 					M.Stun(power)
-					M.stuttering = max(M.stuttering, power)
+					M.stutter(SOURCE_STRUCTURAL, power)
 
 					var/datum/effect/effect/system/spark_spread/s = new /datum/effect/effect/system/spark_spread
 					s.set_up(5, 1, M)

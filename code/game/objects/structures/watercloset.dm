@@ -454,8 +454,8 @@
 				else
 					B.deductcharge(B.hitcost)
 				user.visible_message( \
-					"<span class='danger'>[user] was stunned by \his wet [O]!</span>", \
-					"<span class='userdanger'>[user] was stunned by \his wet [O]!</span>")
+					"<span class='danger'>[user] was stunned by \his wet [O.name]!</span>", \
+					"<span class='userdanger'>[user] was stunned by \his wet [O.name]!</span>")
 				return 1
 	// Short of a rewrite, this is necessary to stop monkeycubes being washed.
 	else if(istype(O, /obj/item/weapon/reagent_containers/food/snacks/monkeycube))

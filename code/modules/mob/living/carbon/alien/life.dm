@@ -43,7 +43,6 @@
 
 	if(stat == DEAD)
 		blinded = 1
-		silent = 0
 	else
 		updatehealth()
 		handle_stunned()
@@ -51,7 +50,6 @@
 		if(health <= 0)
 			death()
 			blinded = 1
-			silent = 0
 			return 1
 
 		if(paralysis && paralysis > 0)

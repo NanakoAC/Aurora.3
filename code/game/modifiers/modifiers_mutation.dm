@@ -12,55 +12,23 @@ A mutation is a subclass of modifier with extended functionality and some specif
 */
 
 
-//Sourcetypes is a bitfield which tracks several possible origins of a mutation.
-//This is primarily for data storage, usage of these bitfields is only partially enforced or technically implemented.
-//Most of them are just here as a standard - a reserved slot for different common sources so they wont conflict
-//Whenever a mutation has no remaining sources, it is removed from the mob
-//These will be listed below, using blindness as an example to explain their intended usase
-#define SOURCE_GENETIC	1
-//Your genetic code has been altered, by genetics, changelings, or certain chemicals, causing you to be
-//unable to see. This requires gene modding to fix
-//This should only be used by the genetics system
-
-#define SOURCE_CHEMICAL 2
-//Some poison has rendered you temporarily blind. This will generally be removed when it wears off
-//This should be used by drugs, medicines, alcohol, etc
-
-#define SOURCE_STRUCTURAL 4
-//Someone has stabbed your eyes, or you dont have any eyes. This will require surgery and/or imidazoline
-//Structural blindness of permanant duration should be added if someone's eyes are cut out
-
-#define SOURCE_EQUIPMENT 8
-//You're wearing a blindfold. Take it off.
-
-#define SOURCE_MAGICAL	16
-//Blind spell, or blinding talisman. Get away from the caster and wait for it to wear off.
-
-#define SOURCE_TECH	32
-//Security flashed you. wait for it to wear off
-
-#define SOURCE_CHRONIC 64
-/*You are blind for some reason that modern medicine cannot fix.
-This sourcetype is generally useful for disabilities that are chosen in character creation and permanantly
-active. EG, someone born blind/deaf/crippled.
-
-Generally no normally-accessible thing should be able to cure chronic mutations. Only really rare mechanics
-like alien artifacts.
-*/
-
-#define SOURCE_MENTAL	128
-//Its all in your head
-
-#define SOURCE_GENERIC	65535	//Unknown or unspecified source. This is the default. It is strongly advised to use a limited duration if using generic
 
 /datum/modifier/mutation
-	var/id = "mutation"
+	var/id = ""
 	//ID is a unique identifier for this class.  Eg Blindness, hulk, deafness, etc
 	//It is mainly used as a dictionary key
+	//ID should be empty for any base/parent classes that aren't intended to exist as used mutations.
+	//This will prevent them being in the all_mutations list
 
 	var/sourcetypes
+	//Source types, used in mutation modifiers
+	//Sourcetypes is a bitfield which tracks several possible origins of a mutation.
+	//This is primarily for data storage, usage of these bitfields is only partially enforced or technically implemented.
+	//Most of them are just here as a standard - a reserved slot for different common sources so they wont conflict
+	//Whenever a mutation has no remaining sources, it is removed from the mob
+	//Defines for sourcetype flags are found in __defines/modifiers.dm
 
-	var/base_check_interval	=	120
+
 	//Most mutations are fairly low intensity and dont need to recheck often
 
 
@@ -70,26 +38,60 @@ like alien artifacts.
 	//All durations on a mutation will count down every tick. When a duration hits 0 that source is removed
 
 	var/intercept_flags = 65535
+	//Intercept flags. These determine what actions a mutation wants to intercept.
+	//Defines for intercept flags are found in __defines/modifiers.dm
+	//If we ever need to intercept more than 16 different types of actions, the bitfield should be used for the most common/performance intensive ones
+
+	var/blocks_speech = 0
+	//No function within the mutation, this is just a signal to quickly check for mute effects
+	//Set it to 1 on any mutations that probably prevent speaking, so it can be used in certain cases to check whether the mob can speak
+
+	check_interval = 6000
+	tick_interval = 6000
+	//Most mutations don't need to tick regularly
+	//These times should be overridden for any mutation that wants to tick, or for any that has special conditions to check
+
+/datum/modifier/mutation/New(var/atom/_target, var/_modifier_type, var/_source = null, var/_source_data = 0, var/_strength = 0, var/_duration = 0, var/_check_interval = 0)
+
+	if (_target == -1)
+		return null
+		//For spawning dummy mutations to hold in a global list
+	world << "Mutation created [id]"
+	..()
 
 
-//Intercept flags. These determine what actions this mutation wants to intercept.
-#define INTERCEPT_SPEECH	0x1	//Whenever the mob says something
-#define INTERCEPT_STEP  	0x2 //Whenever the mob moves under its own power
-#define	INTERCEPT_HAND     	0x4 //Whenever the mob uses attack_hand, or attack_generic on an object
-#define INTERCEPT_LIFE      0x8 //When the mob's life ticks.
-#define INTERCEPT_DEATH		0x10
-//#define SLOT_EARS       0x10
-//#define SLOT_MASK       0x20
-//#define SLOT_HEAD       0x40
-//#define SLOT_FEET       0x80
-//#define SLOT_ID         0x100
-//#define SLOT_BELT       0x200
-//#define SLOT_BACK       0x400
-//#define SLOT_POCKET     0x800
-//#define SLOT_DENYPOCKET 0x1000
-//#define SLOT_TWOEARS    0x2000
-//#define SLOT_TIE        0x4000
-//#define SLOT_HOLSTER	0x8000
+/datum/modifier/mutation/process(var/deltatime)
+	deltatime = world.time - last_tick
+	world << "Mutation processing, delta [deltatime]"
+	var/forcecheck = 0 //If true we will force a validity recheck this tick
+	var/mindelta = tick_interval //The amount of time that we are going to wait until the next tick
+	if (durations)
+		for (var/v in durations)
+			world << "Ticking down duration before [durations[v]]"
+			durations[v] -= deltatime
+			world << "Ticking down duration after [durations[v]]"
+			if (durations[v] <= 0)
+				forcecheck = 1
+			mindelta = min(mindelta, durations[v]) //If a duration has less time remaining than our tick interval, next tick will be sooner
+
+	if (!active && !forcecheck && !durations.len)
+		last_tick = world.time
+		return 0
+
+	next_tick = last_tick + mindelta
+	last_tick = world.time
+
+	if (forcecheck || world.time > next_check)
+		last_check = world.time
+		.=check_validity()
+	else
+		return 1
+
+/datum/modifier/mutation/Destroy()
+	..()
+	if (isliving(target))
+		var/mob/living/L = target
+		L.mutations -= id
 
 /datum/modifier/mutation/handle_registration(var/override = 0)
 	var/mob/living/L = target //Get it into the subject's mutations list before activation
@@ -97,8 +99,17 @@ like alien artifacts.
 	..()
 
 
+/datum/modifier/mutation/check_validity()
+	next_check = last_check + check_interval
+	for (var/v in durations)
+		if (durations[v] <= 0)
+			sourcetypes &= ~(text2num(v))
+			durations -= v
 
-/datum/modifier/mutation/custom_validity()
+	if (sourcetypes)
+		return 1
+	world << "Validity check failing [sourcetypes]"
+	return validity_fail("No sources remaining.")
 
 
 //This is the main proc for adding a mutation. call mob.add_mutation whenever you wish to add one.
@@ -117,57 +128,75 @@ like alien artifacts.
 		regarded as infinitely high.
 
 */
-/mob/living/proc/add_mutation(var/mut_type, var/sourcetypes, var/duration)
-	if (!mut_type || !sourcetypes)
-		world << "Attempted to create mutation with nonexistent type or source: -[mut_type]-/-[sourcetypes]-"
+/mob/proc/add_mutation(var/mut_type, var/_sourcetypes, var/duration)
+	if (!isliving(src))
+		return null
+
+	if (!mut_type || !_sourcetypes)
+		world << "Attempted to create mutation with nonexistent type or source: -[mut_type]-/-[_sourcetypes]-"
 		return //Invalid data passed, fail
 
 
 	var/datum/modifier/mutation/mut
 	if (mutations[mut_type])
 		mut = mutations[mut_type]
+		world << "Mutation [mut_type] already exists. we have a reference to it [mut]"
 		//The mob already has a mutation of this type, we grab a reference to it to work with
 
 	else
 		//The mob doesnt have this mutation, we must instantiate a new copy.
-		//TODO: Add code to copy a mutation from a master list
-		var/newtype //Fetch from master list on this line
-		mut = new newtype(src, MODIFIER_CUSTOM, _check_interval = base_check_interval, override = MODIFIER_OVERRIDE_REPLACE)
+		mut = mutations_list[mut_type] //Fetch from global mutations list
+		var/newtype = mut.type
+		if (!newtype)
+			world << "Failed to fetch mutation from global list: -[mut_type]-/-[_sourcetypes]-"
+			for (var/v in mutations_list)
+				world << "[v] [mutations_list[v]]"
+			return //We failed to get it from the list, must have passed a nonexistent type.
+		world << "newtype is [newtype] about to create one"
+		mut = new newtype(src, MODIFIER_MUTATION)
+		world << "Created [mut]"
 
-	if (!mut)
-		world << "Attempted to create mutation with invalid type: -[mut_type]-/-[sourcetypes]-"
+	if (!mut || !istype(mut))
+		world << "Failed to create mut, [mut]"
+		world << "Attempted to create mutation with invalid type: -[mut_type]-/-[_sourcetypes]-"
 		return //We failed to get it from the list, must have passed a nonexistent type.
 
-
+	world << "Mutation creation successful [mut], [mut.id]"
 	//Now that we have the reference to the mutation we're working with
-	if (!mut.sources)
+	if (!mut.sourcetypes)
 		//If the sources var of the mutation is zero, then this mutation was just created
-		mut.sources = sourcetypes'
+		mut.sourcetypes = _sourcetypes
+		if (duration)
+			mut.durations["[_sourcetypes]"] = duration
+			mut.next_tick = min(mut.next_tick, mut.last_tick + duration)
 		mut.handle_registration() //Handle registration calls Activate to actually start the mutation
 	else
 		//If sources is already nonzero, then this mutation was pre-existing
-		if ((sources & sourcetypes))
+		if ((mut.sourcetypes & _sourcetypes))
 			//Mutation from this source already exists. Lets handle duration updating
-			if (isnum(durations["[sourcetypes]"]))
+			//Note that for handling durations, the assumption of a single type is made. Passing multiple sourcetypes in one bitfield isnt a good idea
+			if (isnum(mut.durations["[_sourcetypes]"]))
 				//A duration already exists
 				if (!duration)
 					//We're passing an indefinite duration. The old limited one is no longer relevant
-					durations.Remove("[sourcetypes]")
+					mut.durations.Remove("[_sourcetypes]")
 				else
 					//Set the duration to the maximum of the two
-					durations["[sourcetypes]"] = max(durations["[sourcetypes]"], duration)
+					mut.durations["[_sourcetypes]"] = max(mut.durations["[_sourcetypes]"], duration)
+					mut.next_tick = min(mut.next_tick, mut.last_tick + duration)
 
+	mut.update_controller()
 			//If there is no pre-existing duration, then we do nothing. Regardless of whether or not
 			//A duration was passed with this mutation. We wont overwrite a permanant effect with a temporary one
 
 
-/datum/modifier/proc/adjust_duration(var/change = 0, var/set_duration = 0)
+/datum/modifier/mutation/adjust_duration(var/change = 0, var/set_duration = 0)
 	for (var/v in durations)
 		if (set_duration)
 			durations[v] = change
 		else
 			durations[v] += change
-
+	update_controller()
 
 
 //Here are the mutation interception procs.
@@ -175,8 +204,22 @@ like alien artifacts.
 
 
 //Speech: For modifying how the mob talks. Add stutter, capitalise things, add shouting verbs, etc.
-//Return a list in the form of text, language, verb to override these params.
-//Set the text to null or "" in order to drop the speech command
-//Return nothing to let the speech continue unmodified
+//Return a list in the form of message, language, verb to override these params.
+//Return a valid list with the message set to null or "" in order to silently drop the command
+//Return null to let the speech continue unmodified
 /datum/modifier/mutation/proc/on_say(var/text, var/datum/language/language, var/speechverb="says")
 	return null
+
+
+//Life: Mostly useable for things that tick whenever the mob's life does
+//Environment is passed in, this is the result of a return_air call, can be manipulated as desired
+//If a specific value of -1 is returned, the life proc terminates immediately
+//If any other true value is returned, it replaces the environment var in the life call
+/datum/modifier/mutation/proc/on_life(var/datum/gas_mixture/environment)
+	return null
+
+
+/client/verb/teststutter()
+	set category = "Debug"
+	new /obj/structure/sink(mob.loc)
+	new /obj/item/weapon/melee/baton/loaded(mob.loc)

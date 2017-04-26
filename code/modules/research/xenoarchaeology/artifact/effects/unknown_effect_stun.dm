@@ -13,7 +13,7 @@
 		if(prob(susceptibility * 100))
 			C << "\red A powerful force overwhelms your consciousness."
 			C.Weaken(rand(1,10) * susceptibility)
-			C.stuttering += 30 * susceptibility
+			C.stutter(SOURCE_MAGICAL, 60 * susceptibility)
 			C.Stun(rand(1,10) * susceptibility)
 
 /datum/artifact_effect/stun/DoEffectAura()
@@ -24,7 +24,7 @@
 			if(prob(10 * susceptibility))
 				C << "\red Your body goes numb for a moment."
 				C.Weaken(2)
-				C.stuttering += 2
+				C.stutter(SOURCE_MAGICAL, 10)
 				if(prob(10))
 					C.Stun(1)
 			else if(prob(10))
@@ -38,6 +38,6 @@
 			if(prob(100 * susceptibility))
 				C << "\red A wave of energy overwhelms your senses!"
 				C.SetWeakened(4 * susceptibility)
-				C.stuttering = 4 * susceptibility
+				C.stutter(SOURCE_MAGICAL, 20 * susceptibility)
 				if(prob(10))
 					C.SetStunned(1 * susceptibility)

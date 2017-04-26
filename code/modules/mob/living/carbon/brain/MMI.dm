@@ -5,7 +5,6 @@
 	src.brainmob.stat = CONSCIOUS
 	src.brainmob.add_language("Robot Talk")
 	src.brainmob.container = src
-	src.brainmob.silent = 0
 	..()
 
 /obj/item/device/mmi/digital/transfer_identity(var/mob/living/carbon/H)

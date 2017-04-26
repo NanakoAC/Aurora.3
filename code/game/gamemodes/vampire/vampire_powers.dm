@@ -182,7 +182,7 @@
 		T << "<span class='danger'> You are captivated by [src.name]'s gaze, and find yourself unable to move or even speak.</span>"
 		T.Weaken(25)
 		T.Stun(25)
-		T.silent += 30
+		T.mute(60, SOURCE_MAGICAL)
 
 		vampire.use_blood(10)
 		admin_attack_log(src, T, "used hypnotise to stun [key_name(T)]", "was stunned by [key_name(src)] using hypnotise", "used hypnotise on")

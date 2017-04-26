@@ -165,8 +165,7 @@
 		if("mouth")
 			if(announce)
 				user.visible_message("<span class='warning'>\The [user] covers [target]'s mouth!</span>")
-			if(target.silent < 3)
-				target.silent = 3
+			target.mute(6, SOURCE_EQUIPMENT)
 		if("eyes")
 			if(announce)
 				assailant.visible_message("<span class='warning'>[assailant] covers [affecting]'s eyes!</span>")

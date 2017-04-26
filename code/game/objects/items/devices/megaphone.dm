@@ -19,7 +19,7 @@
 	if(!ishuman(user))
 		user << "<span class='warning'>You don't know how to use this!</span>"
 		return
-	if(user.silent)
+	if(user.is_muted())
 		return
 	if(spamcheck)
 		user << "<span class='warning'>\The [src] needs to recharge!</span>"

@@ -13,8 +13,6 @@
 		return
 	switch(act)
 		if ("me")
-			if(silent)
-				return
 			if (src.client)
 				if (client.prefs.muted & MUTE_IC)
 					src << "\red You cannot send IC messages (muted)."

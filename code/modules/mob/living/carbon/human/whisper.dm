@@ -59,17 +59,18 @@
 
 	message = capitalize(trim(message))
 
-	if(speech_problem_flag)
-		var/list/handle_r = handle_speech_problems(message)
-		message = handle_r[1]
-		verb = handle_r[2]
-		if(verb == "yells loudly")
-			verb = "slurs emphatically"
-		else
-			var/adverb = pick("quietly", "softly")
-			verb = "[verb] [adverb]"
 
-		speech_problem_flag = handle_r[3]
+	//Here we let mutations intercept it, incase they want to modify the speech or language.
+	//The mutations will be responsible for checking to ensure the language flags are valid
+	for (var/m in mutations)
+		var/datum/modifier/mutation/M = mutations[m]
+		if (M.intercept_flags & INTERCEPT_SPEECH)
+			var/list/l = M.on_say(message, speaking, verb)
+			if (l)
+				message = l[1]
+				speaking = l[2]
+				verb = l[3]
+
 
 	if(!message || message=="")
 		return

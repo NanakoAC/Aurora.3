@@ -917,14 +917,12 @@
 		Sleeping(2)
 	if(stat == DEAD)	//DEAD. BROWN BREAD. SWIMMING WITH THE SPESS CARP
 		blinded = 1
-		silent = 0
 	else				//ALIVE. LIGHTS ARE ON
 		updatehealth()	//TODO
 
 		if(health <= config.health_threshold_dead || (species.has_organ["brain"] && !has_brain()))
 			death()
 			blinded = 1
-			silent = 0
 			return 1
 
 		//UNCONSCIOUS. NO-ONE IS HOME
@@ -1490,10 +1488,6 @@
 			hud_list[SPECIALROLE_HUD] = holder
 	hud_updateflag = 0
 
-/mob/living/carbon/human/handle_silent()
-	if(..())
-		speech_problem_flag = 1
-	return silent
 
 
 /mob/living/carbon/human/handle_stunned()

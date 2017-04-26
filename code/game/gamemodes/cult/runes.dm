@@ -1068,7 +1068,7 @@ var/list/sacrificed = list()
 					else if(iscarbon(T))
 						var/mob/living/carbon/C = T
 						flick("e_flash", C.flash)
-						C.silent += 15
+						C.mute(30, SOURCE_MAGICAL)
 						C.Weaken(25)
 						C.Stun(25)
 						admin_attack_log(usr, C, "Used a stun rune.", "Was victim of a stun rune.", "used a stun rune on")

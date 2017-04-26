@@ -134,10 +134,8 @@
 	M.SetWeakened(0)
 	M.SetStunned(0)
 	M.SetParalysis(0)
-	M.silent = 0
 	M.dizziness = 0
 	M.drowsyness = 0
-	M.stuttering = 0
 	M.confused = 0
 	M.sleeping = 0
 	M.jitteriness = 0

@@ -155,7 +155,7 @@
 		qdel(src)
 
 /obj/structure/foamedmetal/attack_hand(var/mob/user)
-	if (prob(10*(user.strength - (3.75*metal))) //Strength >= 17 guarantees 1 hit break
+	if (prob(10*(user.strength - (3.75*metal)))) //Strength >= 17 guarantees 1 hit break
 		user.visible_message("<span class='warning'>[user] smashes through the foamed metal.</span>", "<span class='notice'>You smash through the metal foam wall.</span>")
 		qdel(src)
 	else

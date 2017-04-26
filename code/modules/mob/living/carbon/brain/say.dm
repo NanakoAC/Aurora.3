@@ -1,8 +1,5 @@
 //TODO: Convert this over for languages.
 /mob/living/carbon/brain/say(var/message)
-	if (silent)
-		return
-
 	message = sanitize(message)
 
 	if(!(container && istype(container, /obj/item/device/mmi)))
@@ -26,6 +23,18 @@
 				return
 			else
 				message = Gibberish(message, (emp_damage*6))//scrambles the message, gets worse when emp_damage is higher
+
+		//Here we let mutations intercept it, incase they want to modify the speech or language.
+		//The mutations will be responsible for checking to ensure the language flags are valid
+		for (var/m in mutations)
+			var/datum/modifier/mutation/M = mutations[m]
+			if (M.intercept_flags & INTERCEPT_SPEECH)
+				var/list/l = M.on_say(message, speaking, verb)
+				if (l)
+					message = l[1]
+					speaking = l[2]
+					verb = l[3]
+
 
 		if(speaking && speaking.flags & HIVEMIND)
 			speaking.broadcast(src,trim(message))

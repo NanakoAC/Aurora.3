@@ -18,7 +18,7 @@
 
 	//This is a hack but its slightly better than the hack it replaced.
 	//Proper painkiller effects for alcohol would be good
-	if(intoxication > AE_SLURRING)
+	if(intoxication > 20)
 		src.traumatic_shock -= 20
 
 	// broken or ripped off organs will add quite a bit of pain

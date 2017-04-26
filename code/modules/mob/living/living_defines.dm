@@ -39,7 +39,6 @@
 
 	var/tod = null // Time of death
 	var/update_slimes = 1
-	var/silent = null 		// Can't talk. Value goes down every life proc.
 	var/on_fire = 0 //The "Are we on fire?" var
 	var/fire_stacks
 	var/footstep = 0

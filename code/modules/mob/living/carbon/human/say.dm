@@ -119,45 +119,13 @@
 		verb = speaking.get_spoken_verb(ending)
 	else
 		if(ending == "!")
-			verb=pick("exclaims","shouts","yells")
+			verb=pick("exclaims")
 		else if(ending == "?")
 			verb="asks"
 
 	return verb
 
-/mob/living/carbon/human/handle_speech_problems(var/message, var/verb)
-	if(silent || (sdisabilities & MUTE))
-		message = ""
-		speech_problem_flag = 1
-	else if(istype(wear_mask, /obj/item/clothing/mask))
-		var/obj/item/clothing/mask/M = wear_mask
-		if(M.voicechange)
-			message = pick(M.say_messages)
-			verb = pick(M.say_verbs)
-			speech_problem_flag = 1
 
-	if(message != "")
-		var/list/parent = ..()
-		message = parent[1]
-		verb = parent[2]
-		if(parent[3])
-			speech_problem_flag = 1
-
-		var/braindam = getBrainLoss()
-		if(braindam >= 60)
-			speech_problem_flag = 1
-			if(prob(braindam/4))
-				message = stutter(message)
-				verb = pick("stammers", "stutters")
-			if(prob(braindam))
-				message = uppertext(message)
-				verb = "yells loudly"
-
-	var/list/returns[3]
-	returns[1] = message
-	returns[2] = verb
-	returns[3] = speech_problem_flag
-	return returns
 
 /mob/living/carbon/human/handle_message_mode(message_mode, message, verb, speaking, used_radios, alt_name)
 	switch(message_mode)

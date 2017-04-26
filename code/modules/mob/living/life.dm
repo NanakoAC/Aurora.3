@@ -8,7 +8,23 @@
 		return
 	if(!loc)
 		return
+
+
+
 	var/datum/gas_mixture/environment = loc.return_air()
+
+	//Here we let mutations intercept life ticks right at the top
+	//A return value of -1 will drop this life call entirely.
+	//A return value of anything else will be used to replace the Environment var
+	for (var/m in mutations)
+		var/datum/modifier/mutation/M = mutations[m]
+		if (M.intercept_flags & INTERCEPT_LIFE)
+			var/l = M.on_life()
+			if (l == -1)
+				//Dropping life calls is generally not recommended, but could be useful for stasis, time stopping, etc
+				return 0
+			else if (l)
+				environment = l
 
 	if(stat != DEAD)
 		//Breathing, if applicable

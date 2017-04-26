@@ -284,6 +284,7 @@
 //Deactivates if the vampire stops frenzying, or stops being a vampire
 /datum/modifier/vamp_frenzy/custom_validity()
 	.=0
-	if (target.mind && target.mind.vampire)
-		if ((target.vampire.status & VAMP_FRENZIED))
+	var/mob/living/L = target
+	if (L.mind && L.mind.vampire)
+		if ((L.mind.vampire.status & VAMP_FRENZIED))
 			return 1

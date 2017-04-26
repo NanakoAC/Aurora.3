@@ -239,9 +239,6 @@ var/controlling
 	set desc     = "Prevents your host from talking for a while."
 
 	if(!src.host) return
-	/*if(!host.silent)
-		usr << "\red Your host already can't speak.."
-		return*/
 	if(!use_points(250)) return
 
 	spawn
@@ -250,7 +247,7 @@ var/controlling
 		host << "\red Your tongue feels numb.. You lose your ability to speak."
 		usr << "\red Your host can't speak anymore."
 
-		host.silent += 60
+		host.mute(120, SOURCE_MENTAL)
 
 		sleep(1200)
 		host << "\red Your tongue has feeling again.."
@@ -379,7 +376,7 @@ var/controlling
 		return
 
 	// Find out whether we can speak
-	if (host.silent || (host.disabilities & 64))
+	if (host.is_muted())
 		src << "<b>Your host can't speak..</b>"
 		return
 
@@ -418,7 +415,7 @@ var/controlling
 		return
 
 	// Find out whether we can speak
-	if (host.silent || (host.disabilities & 64))
+	if (host.is_muted())
 		src << "<b>Your host can't speak..</b>"
 		return
 

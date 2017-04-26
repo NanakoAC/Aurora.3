@@ -146,16 +146,7 @@ proc/get_radio_key_from_channel(var/channel)
 		speaking = get_default_language()
 
 
-	//Here we let mutations intercept it, incase they want to modify the speech or language.
-	//The mutations will be responsible for checking to ensure the language flags are valid
-	for (var/m in mutations)
-		var/datum/modifier/mutation/M = mutations[m]
-		if (M.intercept_flags & INTERCEPT_SPEECH)
-			var/list/l = M.on_say(message, speaking, verb)
-			if (l)
-				message = l[1]
-				speaking = l[2]
-				verb = l[3]
+
 
 
 	// This is broadcast to all mobs with the language,
@@ -170,14 +161,19 @@ proc/get_radio_key_from_channel(var/channel)
 		src << "<span class='danger'>You're muzzled and cannot speak!</span>"
 		return
 
+	//Here we let mutations intercept it, incase they want to modify the speech or language.
+	//The mutations will be responsible for checking to ensure the language flags are valid
+	for (var/m in mutations)
+		var/datum/modifier/mutation/M = mutations[m]
+		if (M.intercept_flags & INTERCEPT_SPEECH)
+			var/list/l = M.on_say(message, speaking, verb)
+			if (l)
+				message = l[1]
+				speaking = l[2]
+				verb = l[3]
+
 	message = trim_left(message)
 
-	if(!(speaking && (speaking.flags & NO_STUTTER)))
-		message = handle_autohiss(message, speaking)
-
-		var/list/handle_s = handle_speech_problems(message, verb)
-		message = handle_s[1]
-		verb = handle_s[2]
 
 	if(!message || message == "")
 		return 0

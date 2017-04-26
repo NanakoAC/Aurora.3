@@ -96,12 +96,10 @@
 
 	if(stat == DEAD)	//DEAD. BROWN BREAD. SWIMMING WITH THE SPESS CARP
 		blinded = 1
-		silent = 0
 	else				//ALIVE. LIGHTS ARE ON
 		if( !container && (health < config.health_threshold_dead || ((world.time - timeofhostdeath) > config.revival_brain_life)) )
 			death()
 			blinded = 1
-			silent = 0
 			return 1
 
 		//Handling EMP effect in the Life(), it's made VERY simply, and has some additional effects handled elsewhere
@@ -117,7 +115,7 @@
 					eye_blind = 1
 					blinded = 1
 					ear_deaf = 1
-					silent = 1
+					mute(10, SOURCE_TECH) //Tech source because emp damage
 					if(!alert)//Sounds an alarm, but only once per 'level'
 						emote("alarm")
 						src << "\red Major electrical distruption detected: System rebooting."
@@ -129,7 +127,6 @@
 					blinded = 0
 					eye_blind = 0
 					ear_deaf = 0
-					silent = 0
 					emp_damage -= 1
 				if(11 to 19)//Moderate level of EMP damage, resulting in nearsightedness and ear damage
 					eye_blurry = 1

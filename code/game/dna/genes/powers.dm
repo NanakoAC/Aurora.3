@@ -140,12 +140,12 @@
 	activate(var/mob/M, var/connected, var/flags)
 		..(M,connected,flags)
 		M.pass_flags |= 1
-		M.size_multiplier = 0.75
+		//M.size_multiplier = 0.75
 
 	deactivate(var/mob/M, var/connected, var/flags)
 		..(M,connected,flags)
 		M.pass_flags &= ~1 //This may cause issues down the track, but offhand I can't think of any other way for humans to get passtable short of varediting so it should be fine. ~Z
-		M.size_multiplier = 1
+		//M.size_multiplier = 1
 
 /datum/dna/gene/basic/hulk
 	name="Hulk"
@@ -164,13 +164,13 @@
 	activate(var/mob/M, var/connected, var/flags)
 		world << "Hulk activated!"
 		..(M,connected,flags)
-		M.size_multiplier = 1.25
+		//M.size_multiplier = 1.25
 		M.strength += 10
 
 
 	deactivate(var/mob/M, var/connected, var/flags)
 		..(M,connected,flags)
-		M.size_multiplier = 1
+		//M.size_multiplier = 1
 		M.strength -= 10
 
 	//No more green skin

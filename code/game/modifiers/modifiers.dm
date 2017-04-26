@@ -81,80 +81,7 @@ it should be avoided in favour of manual removal where possible
 
 
 
-//Modifier types
-//These are needed globally and cannot be undefined
 
-#define MODIFIER_EQUIPMENT	1
-//The status effect remains valid as long as it is worn upon the affected mob.
-//Worn here means it must be held in a valid equip slot, which does not include pockets, storage, or held in hands.
-//The affected atom must be a mob
-
-#define MODIFIER_ITEM	2
-//The modifier remains valid as long as the item is in the target's contents,
-//no matter how many layers deep, if it can be found by recursing up, it is valid
-//This is essentially a more permissable version of equipment, and works when held, in backpacks, pockets, etc
-//It can also be used on non-mob targets
-
-#define MODIFIER_REAGENT	3
-//The status effect remains valid as long as the dose of this chemical in a mob's reagents is above
-//a specified dose value (specified in source data).
-//The default of zero will keep it valid if the chemical is in them at all
-//This checks for the reagent by type, in any of a mob's reagent holders - touching, blood, ingested
-//Affected atom must be a mob
-
-#define MODIFIER_AURA	4
-//The modifier remains valid as long as the target's turf is within a range of the source's turf
-//The range is defined in source data
-//A range of zero is still valid if source and target are on the same turf. Sub-zero range is invalid
-//Works on any affected atom
-
-#define MODIFIER_TIMED	5
-//The modifier remains valid as long as the duration has not expired.
-//Note that a duration can be used on any time, this type is just one that does not
-//check anything else but duration.
-//Does not require or use a source atom
-//Duration is mandatory for this type.
-//Works on any atom
-
-
-#define MODIFIER_CUSTOM	6
-//The validity check will always return 1. The author is expected to override
-//it with custom validity checking behaviour.
-//Does not require or use a source atom
-//Does not support duration
-
-
-
-//Override Modes:
-//An override parameter is passed in with New, which determines what to do if a modifier of
-//the same type already exists on the target
-
-#define MODIFIER_OVERRIDE_DENY	0
-//The default. If a modifier of our type already exists, the new one is discarded. It will Qdel itself
-//Without adding itself to any lists
-
-#define MODIFIER_OVERRIDE_NEIGHBOR	1
-//The new modifier ignores the existing one, and adds itself to the list alongside it
-//This is not recommended but you may have a specific application
-//Using the strength var and updating the effects is preferred if you want to stack multiples
-//of the same type of modifier on one mob
-
-#define MODIFIER_OVERRIDE_REPLACE 	2
-//Probably the most common nondefault and most useful. If an old modifier of the same type exists,
-//Then the old one is first stopped without suspending, and deleted.
-//Then the new one will add itself as normal
-
-#define MODIFIER_OVERRIDE_REFRESH 	3
-//This mode will overwrite the variables of the old one with our new values
-//It will also force it to remove and reapply its effects
-//This is useful for applying a lingering modifier, by refreshing its duration
-
-#define MODIFIER_OVERRIDE_STRENGTHEN	4
-//Almost identical to refresh, but it will only apply if the new modifer has a higher strength value
-//If the existing modifier's strength is higher than the new one, the new is discarded
-
-#define MODIFIER_OVERRIDE_CUSTOM	5
-//Calls a custom override function to be overwritten
 
 
 
@@ -170,9 +97,8 @@ it should be avoided in favour of manual removal where possible
 /datum/modifier
 //Config
 	var/check_interval = 300 //How often, in deciseconds, we will recheck the validity
-	var/tick_interval = 0 //How often, in deciseconds, we will run process ticks for this modifier.
-	//The default value of 0 will cause a process tick for every controller tick, every 10 deciseconds.
-	//So setting to a value between 1-10 has no effect, and in general values are effectively a multiple of 10
+	var/tick_interval = 10 //How often, in deciseconds, we will run process ticks for this modifier. Minimum value is 1
+	var/deltatime	//The time that has passed since the last tick
 
 	var/atom/target = null
 	var/atom/source = null
@@ -193,9 +119,14 @@ it should be avoided in favour of manual removal where possible
 
 //Operating Vars
 	var/active = 0//Whether or not the effects are currently applied
+	var/last_check = 0
 	var/next_check = 0
 	var/last_tick = 0
 	var/next_tick = 0
+
+/datum/modifier/proc/update_controller()
+	if (isnull(gcDestroyed))
+		modifier_controller.next_tick = min(modifier_controller.next_tick, next_tick)
 
 
 //If creation of a modifier is successful, it will return a reference to itself
@@ -210,6 +141,11 @@ it should be avoided in favour of manual removal where possible
 	last_tick = world.time
 	if (_duration)
 		duration = _duration
+
+	if (!next_tick)
+		next_tick = INFINITY
+	next_tick = min(last_tick + tick_interval, last_tick+duration, next_tick)
+
 
 	if (_check_interval)
 		check_interval = _check_interval
@@ -243,8 +179,11 @@ it should be avoided in favour of manual removal where possible
 				return invalid_creation("Timed type requires a duration")
 		if (MODIFIER_CUSTOM)
 			//No code here, just to prevent else
+		if (MODIFIER_MUTATION)
+			//As above
 		else
 			return invalid_creation("Invalid or unrecognised modifier type")//Not a valid modifier type.
+	world << "Modifier successfully created [type], [next_tick]"
 	return 1
 
 
@@ -256,10 +195,13 @@ it should be avoided in favour of manual removal where possible
 	if (!existing)
 		processing_modifiers += src
 		target.modifiers += src
+		update_controller()
 		activate()
 		return src
 	else
-		return handle_override(override, existing)
+		.=handle_override(override, existing)
+		if (.==src)
+			update_controller()
 
 /datum/modifier/proc/activate()
 	if (!gcDestroyed && !active && target)
@@ -272,20 +214,32 @@ it should be avoided in favour of manual removal where possible
 	return 1
 
 /datum/modifier/proc/process()
+	deltatime = world.time - last_tick
+	var/mindelta = tick_interval //The amount of time that we are going to wait until the next tick
+	var/forcecheck = 0
 
-	if (!active)
+	if (!isnull(duration))
+		duration -= deltatime
+		if (duration <= 0)
+			forcecheck = 1
+		else
+			mindelta = min(mindelta, duration)
+
+	if (!active && !forcecheck)
 		last_tick = world.time
 		return 0
 
-	if (world.time > next_check)
-		last_tick = world.time
-		return check_validity()
+	next_tick = last_tick + mindelta
 	last_tick = world.time
-	next_tick = last_tick + tick_interval
-	return 1
+
+	if (forcecheck || world.time > next_check)
+		.=check_validity()
+		last_check = world.time
+	else
+		return 1
 
 /datum/modifier/proc/check_validity()
-	next_check = world.time + check_interval
+	next_check = last_check + check_interval
 	if (!target || target.gcDestroyed)
 		return validity_fail("Target is gone!")
 
@@ -361,7 +315,7 @@ it should be avoided in favour of manual removal where possible
 	return 1
 
 /datum/modifier/proc/validity_fail(var/reason)
-	//world << "MODIFIER VALIDITY FAIL: [reason]"
+	world << "MODIFIER VALIDITY FAIL: [reason]"
 	qdel(src)
 	return 0
 
@@ -388,7 +342,7 @@ it should be avoided in favour of manual removal where possible
 /datum/modifier/proc/refresh()
 	deactivate()
 	activate()
-
+	update_controller()
 
 /datum/modifier/Destroy()
 	if (active)
@@ -462,9 +416,9 @@ it should be avoided in favour of manual removal where possible
 		duration = set_duration
 	else if (duration && change)
 		duration += change
-
+	update_controller()
 
 /datum/modifier/proc/update_interval(var/newinterval)
-	var/diff = check_interval - newinterval
-	check_interval = newinterval
-	next_check += diff
+	tick_interval = newinterval
+	next_tick = min(next_tick, last_tick+tick_interval)
+	update_controller()

@@ -1066,7 +1066,6 @@ mob/proc/yank_out_object()
 /mob/living/proc/handle_statuses()
 	handle_stunned()
 	handle_weakened()
-	handle_silent()
 	handle_drugged()
 
 /mob/living/proc/handle_stunned()
@@ -1079,11 +1078,6 @@ mob/proc/yank_out_object()
 		weakened = max(weakened-1,0)	//before you get mad Rockdtben: I done this so update_canmove isn't called multiple times
 	return weakened
 
-
-/mob/living/proc/handle_silent()
-	if(silent)
-		silent = max(silent-1, 0)
-	return silent
 
 /mob/living/proc/handle_drugged()
 	if(druggy)

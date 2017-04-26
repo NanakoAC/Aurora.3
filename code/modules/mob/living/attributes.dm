@@ -5,7 +5,7 @@ provide a simple, centralised point of abstraction, that effects, equipment, spe
 Attributes, such as strength, are hooked into a vast number of points in the code, so that specialised things
 do not need to do this, for example replacing specific checks for the hulk mutation or power gloves, in grabbing code
 
-Becuase attributes are hooked into so many places, this file is intended to provide documentation of where and how.
+Because attributes are hooked into so many places, this file is intended to provide documentation of where and how.
 Whenever an attribute, or a check for it is added, that should be referenced here, including enough information
 to locate it. Codefile name, partial path, and maybe procname containing the code.
 Don't bother with line numbers, those will change when unrelated things get modified
@@ -20,7 +20,12 @@ In this initial draft, strength is the only attribute.
 Strength is a measure of a mob's ability to exert physical force on its surroundings. It is factored into melee damage,
 dragging/pulling objects, picking up items, hauling heavy things around, wearing heavy equipment, etc
 */
-var/strength = 10
+
+//Defined at mob level for safety and ease of checks.
+//Nonliving mobs have no corporeal presence and/or dont really exist, so their strength is 0
+/mob/var/strength = 0
+/mob/living/strength = 5 //A fairly safe baseline value for animals, but should be overridden anyway
+/mob/living/carbon/human/strength = 10 //This should be set from set_species anyway, just defining it for safety
 
 
 /*

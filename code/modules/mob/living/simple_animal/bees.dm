@@ -9,7 +9,7 @@
 	unsuitable_atoms_damage = 2.5
 	maxHealth = 20
 	density = 0
-	var/strength = 1
+	var/swarm_strength = 1
 	var/feral = 0
 	var/mut = 0
 	var/toxic = 0
@@ -37,8 +37,8 @@
 //Because we don't have sprites for a carpet made of bee corpses.
 /mob/living/simple_animal/bee/death()
 	if (!gcDestroyed)
-		strength -= 1
-		if (strength <= 0)
+		swarm_strength -= 1
+		if (swarm_strength <= 0)
 			if (prob(35))//probability to reduce spam
 				src.visible_message("\red The bee swarm completely dissipates.")
 			qdel(src)
@@ -53,10 +53,10 @@
 		..()
 
 /mob/living/simple_animal/bee/Life()
-	if(!loner && strength && !parent && prob(7-strength))
-		strength -= 1
+	if(!loner && swarm_strength && !parent && prob(7-swarm_strength))
+		swarm_strength -= 1
 
-	if(strength <= 0)
+	if(swarm_strength <= 0)
 		death()
 	else
 		update_icons()
@@ -82,8 +82,8 @@
 				else
 					prob_mult -= 0.01 *(min(worn_helmet.armor["bio"],30))// Is your helmet sealed? I can't get to 30% of your body.
 			if( prob(sting_prob*prob_mult) && (M.stat == CONSCIOUS || (M.stat == UNCONSCIOUS && prob(25*prob_mult))) ) // Try to sting! If you're not moving, think about stinging.
-				M.apply_damage(min(strength*0.85,2)+mut, BURN, sharp=1) // Stinging. The more mutated I am, the harder I sting.
-				M.apply_damage(max(strength*1.7,(round(feral/10,1)*(max((round(strength/20,1)),1)))+toxic), TOX) // Bee venom based on how angry I am and how many there are of me!
+				M.apply_damage(min(swarm_strength*0.85,2)+mut, BURN, sharp=1) // Stinging. The more mutated I am, the harder I sting.
+				M.apply_damage(max(swarm_strength*1.7,(round(feral/10,1)*(max((round(swarm_strength/20,1)),1)))+toxic), TOX) // Bee venom based on how angry I am and how many there are of me!
 				M << "\red You have been stung!"
 				M.flash_pain()
 
@@ -101,11 +101,11 @@
 			if(target_mob)
 				target_mob = null
 				target_turf = null
-			if(strength > 5)
+			if(swarm_strength > 5)
 				//calm down and spread out a little
 				var/mob/living/simple_animal/bee/B = new(get_turf(src))
-				B.strength = rand(1,5)
-				src.strength -= B.strength
+				B.swarm_strength = rand(1,5)
+				src.swarm_strength -= B.swarm_strength
 				update_icons()
 				B.update_icons()
 				if(src.parent)
@@ -149,21 +149,21 @@
 
 			if(feral > 0)
 
-				src.strength += B.strength
-				B.strength = 0
+				src.swarm_strength += B.swarm_strength
+				B.swarm_strength = 0
 				B.update_icons()
 				update_icons()
 
 			else if(prob(10))
 				//make the other swarm of bees stronger, then move away
-				var/total_bees = B.strength + src.strength
+				var/total_bees = B.swarm_strength + src.swarm_strength
 				if(total_bees < 10)
-					B.strength = min(5, total_bees)
-					src.strength = total_bees - B.strength
+					B.swarm_strength = min(5, total_bees)
+					src.swarm_strength = total_bees - B.swarm_strength
 
 					update_icons()
 					B.update_icons()
-					if(src.strength <= 0)
+					if(src.swarm_strength <= 0)
 						qdel(src)
 						return
 					var/turf/simulated/floor/T = get_turf(get_step(src, pick(1,2,4,8)))
@@ -223,8 +223,8 @@
 
 
 /mob/living/simple_animal/bee/update_icons()
-	if(strength <= 5)
-		icon_state = "bees[round(strength,1)]"
+	if(swarm_strength <= 5)
+		icon_state = "bees[round(swarm_strength,1)]"
 	else
 		icon_state = "bees_swarm"
 
@@ -236,12 +236,12 @@
 
 //No more grabbing bee swarms
 /mob/living/simple_animal/bee/attempt_grab(var/mob/living/grabber)
-	if (prob(strength*5))//if the swarm is big you might grab a few bees, you won't make a serious dent
+	if (prob(swarm_strength*5))//if the swarm is big you might grab a few bees, you won't make a serious dent
 		grabber << "<span class = 'warning'>You attempt to grab the swarm, but only manage to snatch a scant handful of crushed bees.</span>"
-		apply_damage(strength*0.5, BRUTE, used_weapon = "Crushing by [grabber.name]")
+		apply_damage(swarm_strength*0.5, BRUTE, used_weapon = "Crushing by [grabber.name]")
 	else
 		grabber << "<span class = 'warning'>For some bizarre reason known only to yourself, you attempt to grab ahold of the swarm of bees. You come away with nothing but empty, slightly stung hands.</span>"
-		grabber.apply_damage(strength*0.5, BURN)
+		grabber.apply_damage(swarm_strength*0.5, BURN)
 
 	return 0
 
@@ -255,10 +255,10 @@
 
 /mob/living/simple_animal/bee/standalone/New(loc, var/obj/machinery/beehive/new_parent)
 	..()
-	strength = rand(4,8)
+	swarm_strength = rand(4,8)
 	update_icons()
 
 /mob/living/simple_animal/bee/beegun
 	maxHealth = 30
-	strength = 5
+	swarm_strength = 5
 	feral = 30

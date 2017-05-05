@@ -51,6 +51,7 @@
 	rarity_value = 3
 	breakcuffs = list(MALE)
 	mob_size = 10
+	strength = 13
 
 	blurb = "A heavily reptillian species, Unathi (or 'Sinta as they call themselves) hail from the Uuosa-Eso \
 	system, which roughly translates to 'burning mother'. A relatively recent addition to the galactic stage, they \
@@ -123,6 +124,7 @@
 	stamina_recovery = 4
 	sprint_speed_factor = 0.65
 	sprint_cost_factor = 0.75
+	strength = 9
 
 	blurb = "The Tajaran race is a species of feline-like bipeds hailing from the planet of Adhomai in the S'rendarr \
 	system. They have been brought up into the space age by the Humans and Skrell, who alledgedly influenced their \
@@ -195,7 +197,7 @@
 
 	stamina	=	90
 	sprint_speed_factor = 1.25 //Evolved for rapid escapes from predators
-
+	strength = 8
 
 /datum/species/diona
 	name = "Diona"
@@ -277,6 +279,7 @@
 	stamina	=	-1			  // Diona sprinting uses energy instead of stamina
 	sprint_speed_factor = 0.5		  //Speed gained is minor
 	sprint_cost_factor = 0.8
+	strength = 12
 
 /datum/species/diona/handle_sprint_cost(var/mob/living/carbon/H, var/cost)
 	var/datum/dionastats/DS = H.get_dionastats()
@@ -574,7 +577,7 @@ datum/species/machine/handle_post_spawn(var/mob/living/carbon/human/H)
 	sprint_speed_factor = 0.7
 	sprint_cost_factor = 0.30
 	stamina_recovery = 2//slow recovery
-
+	strength = 11
 
 	has_organ = list(
 		"neural socket" =  /obj/item/organ/vaurca/neuralsocket,

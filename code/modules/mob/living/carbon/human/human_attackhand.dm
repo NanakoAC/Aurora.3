@@ -262,7 +262,7 @@
 
 			var/real_damage = rand_damage
 			real_damage += attack.get_unarmed_damage(H)
-			real_damage *= damage_multiplier * (user.strength * 0.1)
+			real_damage *= damage_multiplier * (M.strength * 0.1)
 
 			real_damage = max(1, real_damage)
 			var/armour = run_armor_check(affecting, "melee")

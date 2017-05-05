@@ -645,7 +645,10 @@
 			pullin.icon_state = "pull0"
 
 /mob/proc/start_pulling(var/atom/movable/AM)
+	//Nonliving mobs can't pull things
+	return
 
+/mob/living/start_pulling(var/atom/movable/AM)
 	if ( !AM || !usr || src==AM || !isturf(src.loc) )	//if there's no person pulling OR the person is pulling themself OR the object being pulled is inside something: abort!
 		return
 
@@ -653,19 +656,14 @@
 		src << "<span class='warning'>It won't budge!</span>"
 		return
 
-	var/mob/M = null
+	var/mob/living/M = null
 	if(ismob(AM))
 		M = AM
-		if(!can_pull_mobs || !can_pull_size)
-			src << "<span class='warning'>It won't budge!</span>"
-			return
-
-		if((mob_size < M.mob_size) && (can_pull_mobs != MOB_PULL_LARGER))
-			src << "<span class='warning'>It won't budge!</span>"
-			return
-
-		if((mob_size == M.mob_size) && (can_pull_mobs == MOB_PULL_SMALLER))
-			src << "<span class='warning'>It won't budge!</span>"
+		var/effective_weight = M.mob_size
+		if (!M.lying)
+			effective_weight *= 0.5
+		if(effective_weight > strength * 2)
+			src << "<span class='warning'>[M] is too heavy, you can't move them!</span>"
 			return
 
 		// If your size is larger than theirs and you have some
@@ -679,9 +677,14 @@
 
 	else if(isobj(AM))
 		var/obj/I = AM
-		if(!can_pull_size || can_pull_size < I.w_class)
-			src << "<span class='warning'>It won't budge!</span>"
-			return
+		var/effective_weight = I.w_class * I.mobility_factor
+		if(effective_weight > strength * 2)
+			//For the sake of fun we'll allow people to attempt to pull things that are too big. They will fail when they move
+			src << "<span class='danger'>You grab ahold of [I], but it doesn't feel like you're strong enough to move it...</span>"
+		else if(effective_weight >= strength * 1.35)
+			//A little flavour message so people can gauge the weight of things before moving them
+			src << "<span class='danger'>You grab ahold of [I]. This thing feels heavy, moving it is going to be tough!</span>"
+
 
 	if(pulling)
 		var/pulling_old = pulling

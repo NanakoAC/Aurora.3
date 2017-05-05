@@ -9,6 +9,7 @@
 	offline_slowdown = 10
 	vision_restriction = TINT_HEAVY
 	offline_vision_restriction = TINT_BLIND
+	active_strength_bonus = 3
 
 	chest_type = /obj/item/clothing/suit/space/rig/unathi
 	helm_type = /obj/item/clothing/head/helmet/space/rig/unathi
@@ -25,7 +26,7 @@
 	vision_restriction = 0
 	slowdown = 4
 	vision_restriction = TINT_NONE
-
+	active_strength_bonus = 6 //The highest strength bonus of any rig, this is the biggest and tankiest one.
 
 /obj/item/clothing/head/helmet/space/rig/unathi
 	species_restricted = list("Unathi")

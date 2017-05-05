@@ -14,6 +14,7 @@
 	stamina = 100 // As opposed to 90
 	brute_mod = 1.1 // Less Brute Damage
 	ethanol_resistance = 1 // Default value
+	strength = 11 //Species default 9
 
 	cold_level_1 = 160 //RaceDefault 200 Default 260
 	cold_level_2 = 100 //RaceDefault 140 Default 200
@@ -39,6 +40,7 @@
 	stamina = 80 // As opposed to 90
 	brute_mod = 1.3 // More Brute Damage
 	ethanol_resistance = 0.6 // Species Default 0.8
+	strength = 8 //Species default 9
 
 	cold_level_1 = 220 //RaceDefault 200 Default 260
 	cold_level_2 = 160 //RaceDefault 140 Default 200

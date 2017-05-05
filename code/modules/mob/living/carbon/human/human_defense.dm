@@ -204,13 +204,6 @@ emp_act
 	else if(!..())
 		return 0
 
-	// forceglove amplification
-	if(istype(user, /mob/living/carbon/human))
-		var/mob/living/carbon/human/X = user
-		if(X.gloves && istype(X.gloves,/obj/item/clothing/gloves/force))
-			var/obj/item/clothing/gloves/force/G = X.gloves
-			effective_force *= G.amplification
-
 	if(effective_force > 10 || effective_force >= 5 && prob(33))
 		forcesay(hit_appends)	//forcesay checks stat already
 

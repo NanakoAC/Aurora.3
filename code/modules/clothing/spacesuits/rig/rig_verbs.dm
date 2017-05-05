@@ -197,7 +197,7 @@
 
 	if(malfunction_check(usr))
 		return
-	
+
 	if(!check_power_cost(usr, 0, 0, 0, 0))
 		return
 
@@ -295,3 +295,39 @@
 
 	usr << "<font color='blue'><b>You attempt to engage the [module.interface_name].</b></font>"
 	module.engage()
+
+
+//Due to the powered endoskeleton built in to move these things, RIGs provide a strength bonus when active
+//The definition of active here is very specific:
+	//Chest, boots and gloves must be deployed. Helmet is optional, theres not much musculature in the head.
+		//This intentionally prevents them from stacking with force gloves
+	//The suit must have power remaining
+	//The suit must be active and sealed - head excepted
+/obj/item/weapon/rig/proc/update_attributes()
+	if (check_attributes())
+		if (isnull(attribute_mods["strength"])) //A message for enabling, make sure it was off beforehand
+			wearer << span("danger", "You feel a surge of strength as \the [suit_type]'s articulation support systems kick in!")
+			attribute_mods = list("strength" = active_strength_bonus)
+			wearer.update_attributes()
+	else if (!isnull(attribute_mods["strength"])) //A message for disabling, make sure it was on first
+		wearer << span("danger", "You feel much weaker and somehow smaller, as \the [suit_type]'s articulation support systems shut down...")
+		attribute_mods = list()
+		wearer.update_attributes()
+
+
+/obj/item/weapon/rig/proc/check_attributes()
+	if (!(wearer.gloves == gloves))
+		return 0
+	if (!(wearer.shoes == boots))
+		return 0
+	if (!(wearer.wear_suit == chest))
+		return 0
+
+	if (!cell || cell.percent() < 30) //Under 30% power deactivates strength bonus
+		return 0
+
+	//Canremove seems to be the var used for whether or not the suit is sealed. Offline is only related to power status
+	if (canremove)
+		return 0
+
+	return 1

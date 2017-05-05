@@ -11,7 +11,7 @@
 	spawn_flags = IS_RESTRICTED
 	siemens_coefficient = 0
 	rarity_value = 5
-	
+
 	brute_mod = 0.5
 	slowdown = 1
 
@@ -38,6 +38,7 @@
 	stamina_recovery = 1
 	sprint_speed_factor = 0.3
 	exhaust_threshold = 0 //No oxyloss, so zero threshold
+	strength = 14
 
 /datum/species/golem/handle_post_spawn(var/mob/living/carbon/human/H)
 	if(H.mind)

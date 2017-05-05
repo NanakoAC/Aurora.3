@@ -9,6 +9,8 @@
 	var/sabotaged = 0 //Emagging limbs can have repercussions when installed as prosthetics.
 	var/model_info
 	dir = SOUTH
+	w_class = 6
+	mobility_factor = 1.6
 
 /obj/item/robot_parts/set_dir()
 	return
@@ -81,6 +83,7 @@
 	var/obj/item/robot_parts/chest/chest = null
 	var/obj/item/robot_parts/head/head = null
 	var/created_name = ""
+	w_class = 11
 
 /obj/item/robot_parts/robot_suit/New()
 	..()
@@ -88,18 +91,25 @@
 
 /obj/item/robot_parts/robot_suit/proc/updateicon()
 	src.overlays.Cut()
+	w_class = initial(w_class) //Endoskeleton gets heavier for each part added
 	if(src.l_arm)
 		src.overlays += "l_arm+o"
+		w_class++
 	if(src.r_arm)
 		src.overlays += "r_arm+o"
+		w_class++
 	if(src.chest)
 		src.overlays += "chest+o"
+		w_class++
 	if(src.l_leg)
 		src.overlays += "l_leg+o"
+		w_class++
 	if(src.r_leg)
 		src.overlays += "r_leg+o"
+		w_class++
 	if(src.head)
 		src.overlays += "head+o"
+		w_class++
 
 /obj/item/robot_parts/robot_suit/proc/check_completion()
 	if(src.l_arm && src.r_arm)

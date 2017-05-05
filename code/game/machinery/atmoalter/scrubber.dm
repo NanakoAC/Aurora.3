@@ -15,6 +15,9 @@
 	power_rating = 7500 //7500 W ~ 10 HP
 	power_losses = 150
 
+	w_class = 14
+	mobility_factor = 0.65 //Its on wheels
+
 	var/minrate = 0
 	var/maxrate = 10 * ONE_ATMOSPHERE
 

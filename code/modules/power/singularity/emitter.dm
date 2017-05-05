@@ -24,6 +24,9 @@
 	var/state = 0
 	var/locked = 0
 
+	w_class = 12
+	mobility_factor = 1.2
+
 	var/_wifi_id
 	var/datum/wifi/receiver/button/emitter/wifi_receiver
 

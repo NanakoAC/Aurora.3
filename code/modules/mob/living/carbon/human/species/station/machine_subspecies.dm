@@ -120,6 +120,7 @@
 	heat_level_1 = 600
 	heat_level_2 = 1200
 	heat_level_3 = 2400
+	strength = 14 //Species default 10
 
 	heat_discomfort_level = 800
 
@@ -171,6 +172,7 @@
 	siemens_coefficient = 0
 	breakcuffs = list(MALE,FEMALE,NEUTER)
 	mob_size = 20
+	strength = 16 //Species default 10
 
 	show_ssd = "laying inert, its activation glyph dark."
 	death_sound = 'sound/effects/bang.ogg'

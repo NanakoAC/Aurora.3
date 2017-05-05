@@ -65,6 +65,7 @@
 	offline_slowdown = 10
 	offline_vision_restriction = TINT_HEAVY
 	emp_protection = -20
+	active_strength_bonus = 5 //Designed for ultra heavy lifting, a miner hauls around drill parts and ore boxes. Built for purpose
 
 	helm_type = /obj/item/clothing/head/helmet/space/rig/industrial
 
@@ -129,6 +130,7 @@
 	offline_slowdown = 0
 	offline_vision_restriction = 0
 	max_heat_protection_temperature = 7500
+	active_strength_bonus = 3 //Built for kinda-heavy lifting
 
 	helm_type = /obj/item/clothing/head/helmet/space/rig/ce
 	glove_type = /obj/item/clothing/gloves/rig/ce
@@ -190,6 +192,7 @@
 	armor = list(melee = 30, bullet = 15, laser = 20, energy = 60, bomb = 30, bio = 100, rad = 100)
 	slowdown = 1
 	offline_vision_restriction = TINT_HEAVY
+	active_strength_bonus = 4 //Gotta lift trees and girders off trapped people
 
 	helm_type = /obj/item/clothing/head/helmet/space/rig/medical
 

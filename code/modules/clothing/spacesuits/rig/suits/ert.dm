@@ -80,6 +80,7 @@
 	icon_state = "asset_protection_rig"
 	armor = list(melee = 60, bullet = 60, laser = 60,energy = 40, bomb = 50, bio = 100, rad = 100)
 	emp_protection = 50
+	active_strength_bonus = 4
 
 	initial_modules = list(
 		/obj/item/rig_module/ai_container,

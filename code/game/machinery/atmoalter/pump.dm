@@ -15,6 +15,8 @@
 	var/pressuremax = 10 * ONE_ATMOSPHERE
 
 	volume = 1000
+	w_class = 12
+	mobility_factor = 0.65 //Its on wheels
 
 	power_rating = 7500 //7500 W ~ 10 HP
 	power_losses = 150

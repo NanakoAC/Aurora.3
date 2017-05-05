@@ -12,6 +12,7 @@ var/global/list/stool_cache = list() //haha stool
 	var/base_icon = "stool_base"
 	var/material/material
 	var/material/padding_material
+	mobility_factor = 1.5 //Rubber feet
 
 /obj/item/weapon/stool/padded
 	icon_state = "stool_padded_preview" //set for the map
@@ -74,7 +75,7 @@ var/global/list/stool_cache = list() //haha stool
 		user.visible_message("<span class='danger'>[user] breaks [src] over [M]'s back!</span>")
 		user.setClickCooldown(DEFAULT_ATTACK_COOLDOWN)
 		user.do_attack_animation(M)
-		
+
 		user.remove_from_mob(src)
 		dismantle()
 		qdel(src)

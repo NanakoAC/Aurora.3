@@ -27,6 +27,37 @@ dragging/pulling objects, picking up items, hauling heavy things around, wearing
 /mob/living/strength = 5 //A fairly safe baseline value for animals, but should be overridden anyway
 /mob/living/carbon/human/strength = 10 //This should be set from set_species anyway, just defining it for safety
 
+/mob/var/base_strength = 5
+/mob/living/carbon/human/base_strength = 10
+
+
+//Helper procs for keeping attributes accurate.
+//Attribute changes should only be done by modifiers and equipment
+/mob/proc/update_attributes()
+	return
+
+/mob/living/update_attributes()
+
+	var/list/modbuffer = list()
+
+	//We do a two-stage refresh of modifiers. First turn them all off
+	for (var/v in modifiers)
+		var/datum/modifier/M = modifiers[v]
+		if (M.active)
+			M.deactivate()
+			modbuffer += M //Keep a buffer of the ones we disabled so we can re-enable only them
+
+	//Then sync the attributes to their base values
+	strength = base_strength
+
+	//Then re-enable only the ones we turned off previously
+	for (var/datum/modifier/M in modbuffer)
+		M.activate()
+
+	//Now we add any bonuses from equipment. Rigs, force gloves, etc
+	for (var/obj/item/I in get_worn_items())
+		if (isnum(I.attribute_mods["strength"]))
+			strength += I.attribute_mods["strength"]
 
 /*
 Strength Interactions
@@ -37,7 +68,7 @@ Generic/variable
 		unarmed melee damage by 10%, stacking additively. human/human_attackhand.dm
 		thrown weapon damage by 10%, stacking additively. code/game/atoms_movable.dm, throw_at proc
 	Each point of strength grants +10% damage when trying to break energy nets. weapons/weaponry.dm, /obj/effect/energy_net/attack_hand
-
+	Strength affects the difficulty of dragging heavy objects and pulling people. mob_movement.dm, search for burdenmult
 
 Specific:
 10:

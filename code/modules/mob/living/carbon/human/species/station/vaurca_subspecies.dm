@@ -28,7 +28,7 @@
 	sprint_speed_factor = 1.0
 	sprint_cost_factor = 0.40
 	stamina_recovery = 3
-
+	strength = 14 //Species default 11
 
 	inherent_verbs = list(
 		/mob/living/carbon/human/proc/bugbite //weaker version of gut.
@@ -66,6 +66,7 @@
 	sprint_speed_factor = 1
 	sprint_cost_factor = 0.80
 	stamina_recovery = 3
+	strength = 18 //These things are massive
 
 	spawn_flags = IS_RESTRICTED
 	flags = NO_SCAN | NO_SLIP | NO_MINOR_CUT

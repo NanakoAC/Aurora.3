@@ -38,6 +38,7 @@
 	offline_slowdown = 3
 	offline_vision_restriction = TINT_HEAVY
 	allowed = list(/obj/item/device/flashlight,/obj/item/weapon/tank,/obj/item/device/suit_cooling_unit,/obj/item/weapon/gun,/obj/item/ammo_magazine,/obj/item/ammo_casing,/obj/item/weapon/melee/baton,/obj/item/weapon/melee/energy/sword,/obj/item/weapon/handcuffs)
+	active_strength_bonus = 4
 
 	chest_type = /obj/item/clothing/suit/space/rig/military
 	helm_type = /obj/item/clothing/head/helmet/space/rig/military

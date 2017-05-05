@@ -1,7 +1,12 @@
 /obj
 	//Used to store information about the contents of the object.
 	var/list/matter
-	var/w_class // Size of the object.
+	var/w_class // Size of the object. For dense objects, w_class is also used in pushing and pulling
+	var/mobility_factor = 1 //A multiplier applied to the w_class in calculations for pushing and pulling.
+		//Values below 1 make it easier to move.
+		//Mobility factor is intended to simulate wheels, runners, or some easily moveable shape.
+		//Can also b
+
 	var/list/origin_tech = null	//Used by R&D to determine what research bonuses it grants.
 	var/unacidable = 0 //universal "unacidabliness" var, here so you can use it in any obj.
 	animate_movement = 2
@@ -23,6 +28,7 @@
 	var/icon_species_in_hand = 0//If 1, we will use the species tag even for rendering this item in the left/right hand.
 
 	var/equip_slot = 0
+
 /obj/Destroy()
 	processing_objects -= src
 	return ..()

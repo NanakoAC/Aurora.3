@@ -1131,3 +1131,20 @@ mob/dead/observer/get_multitool()
 
 /mob/living/silicon/ai/get_multitool()
 	return ..(aiMulti)
+
+//This is a list of equip slots in which an item is classified as being "worn"
+//This does not include hands, pockets and suit storage
+var/global/list/equip_slots_worn = list(slot_back, slot_wear_mask, slot_handcuffed, slot_belt, \
+	slot_wear_id, slot_l_ear, slot_glasses, slot_gloves, slot_head, slot_shoes, slot_wear_suit, \
+	slot_w_uniform,slot_legcuffed, slot_r_ear, slot_legs, slot_tie)
+
+/mob/proc/get_worn_items()
+	return
+
+/mob/living/carbon/human/get_worn_items()
+	var/list/things = list()
+	for (var/obj/item/I in src)
+		if (I.equip_slot && I.equip_slot in equip_slots_worn)
+			things += I
+
+	return things

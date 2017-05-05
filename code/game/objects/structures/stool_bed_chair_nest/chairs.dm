@@ -7,6 +7,7 @@
 	buckle_dir = 0
 	buckle_lying = 0 //force people to sit up in chairs when buckled
 	var/propelled = 0 // Check for fire-extinguisher-driven chairs
+	mobility_factor = 1.4
 
 /obj/structure/bed/chair/attackby(obj/item/weapon/W as obj, mob/user as mob)
 	..()
@@ -122,6 +123,7 @@
 /obj/structure/bed/chair/office
 	anchored = 0
 	buckle_movable = 1
+	mobility_factor = 0.7 //Wheels!
 
 /obj/structure/bed/chair/office/update_icon()
 	return

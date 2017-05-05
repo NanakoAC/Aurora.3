@@ -74,6 +74,8 @@
 	New()
 		..()
 		reagents.add_reagent("water",1000)
+	w_class = 18
+	mobility_factor = 0.75 //Massive, but wheeled
 
 /obj/structure/reagent_dispensers/fueltank
 	name = "fuel tank"
@@ -88,6 +90,9 @@
 	New()
 		..()
 		reagents.add_reagent("fuel",1000)
+
+	w_class = 18
+	mobility_factor = 0.75 //Massive, but wheeled
 
 /obj/structure/reagent_dispensers/fueltank/examine(mob/user)
 	if(!..(user, 2))
@@ -219,6 +224,9 @@
 		..()
 		reagents.add_reagent("water",500)
 
+	w_class = 12
+	mobility_factor = 0.75 //wheeled
+
 /obj/structure/reagent_dispensers/water_cooler/attackby(obj/item/weapon/W as obj, mob/user as mob)
 	if (istype(W,/obj/item/weapon/wrench))
 		src.add_fingerprint(user)
@@ -244,6 +252,8 @@
 	New()
 		..()
 		reagents.add_reagent("beer",1000)
+	w_class = 12
+	mobility_factor = 1.1 //Awkward to drag
 
 /obj/structure/reagent_dispensers/virusfood
 	name = "Virus Food Dispenser"

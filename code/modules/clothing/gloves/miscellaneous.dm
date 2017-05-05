@@ -44,7 +44,7 @@
 	siemens_coefficient = 1.0 //thin latex gloves, much more conductive than fabric gloves (basically a capacitor for AC)
 	permeability_coefficient = 0.01
 	germ_level = 0
-	
+
 /obj/item/clothing/gloves/botanic_leather
 	desc = "These leather work gloves protect against thorns, barbs, prickles, spikes and other harmful objects of floral origin."
 	name = "botanist's leather gloves"
@@ -160,15 +160,15 @@
 	max_heat_protection_temperature = GLOVES_MAX_HEAT_PROTECTION_TEMPERATURE
 
 	var/active = 1 //i am actually too lazy to code an on/off switch so if you want it off, take them off for now.  yes.
-	var/amplification = 2
+	attribute_mods = list("strength" = 1.5)
 
 /obj/item/clothing/gloves/force/basic //dooo iiiitttttt
 	name = "basic force gloves" //do it skull do it give it to all sec the forums agree go
 	desc = "These gloves bend gravity and bluespace, providing a cheap boost to the effectiveness of your average security staff."
 	icon_state = "power_glove" //todo: different sprites for different levels of power
 	item_state = "power_glove"
-	amplification = 1 //just do it
+	attribute_mods = list("strength" = 1)
 
 /obj/item/clothing/gloves/force/syndicate  //for syndies.  pda, *maybe* nuke team or ert.  up to you.  maybe just use the amp 2 variant.
 	name = "enhanced force gloves"
-	amplification = 2.5 //because *2.5 is kind of scary okay.  sometimes you want the scary effect.  sometimes not.
+	attribute_mods = list("strength" = 2)

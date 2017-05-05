@@ -223,3 +223,13 @@ A mutation is a subclass of modifier with extended functionality and some specif
 	set category = "Debug"
 	new /obj/structure/sink(mob.loc)
 	new /obj/item/weapon/melee/baton/loaded(mob.loc)
+
+/client/verb/addmut()
+	set category = "Debug"
+	set name = "Add Mutation"
+
+	var/mut = input(mob,"Choose a mutation to add to yourself") in mutations_list
+	var/dur = input(mob,"Type in a duration, in seconds. Blank or 0 will be permanant.") as num
+	if (!dur || !isnum(dur))
+		dur = 0
+	mob.add_mutation(mut, SOURCE_CHRONIC, dur*10)

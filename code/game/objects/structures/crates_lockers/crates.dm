@@ -12,7 +12,7 @@
 	var/rigged = 0
 	var/tablestatus = 0
 	pass_flags = PASSTABLE
-
+	mobility_factor = 0.9//Low, flat shape, easier to move
 
 /obj/structure/closet/crate/can_open()
 	if (tablestatus != -1)//Can't be opened while under a table

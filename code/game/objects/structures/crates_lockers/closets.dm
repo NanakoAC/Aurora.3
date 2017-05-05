@@ -17,7 +17,8 @@
 							  //then open it in a populated area to crash clients.
 	var/open_sound = 'sound/machines/click.ogg'
 	var/close_sound = 'sound/machines/click.ogg'
-
+	w_class = 13
+	mobility_factor = 1.1//Tall and awkward, with rubber feet making friction
 	var/store_misc = 1
 	var/store_items = 1
 	var/store_mobs = 1

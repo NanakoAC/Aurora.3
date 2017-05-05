@@ -113,6 +113,7 @@ Class Procs:
 	var/global/gl_uid = 1
 	var/interact_offline = 0 // Can the machine be interacted with while de-powered.
 	var/printing = 0 // Is this machine currently printing anything?
+	w_class = 8 //A default value, this is u
 
 /obj/machinery/New(l, d=0)
 	..(l)
@@ -378,7 +379,7 @@ Class Procs:
 
 	if (play_sound)
 		playsound(src.loc, print_sfx, 50, 1)
-	
+
 	visible_message("<span class='notice'>[src] rattles to life and spits out a paper titled [paper].</span>")
 
 	spawn(print_delay)

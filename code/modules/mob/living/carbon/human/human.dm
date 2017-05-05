@@ -1179,6 +1179,10 @@
 	sprint_cost_factor = species.sprint_cost_factor
 	stamina_recovery = species.stamina_recovery
 
+	base_strength = species.strength
+	//For if a species has just changed, update attributes will refresh any modifiers and equipment affecting strength
+	update_attributes()
+
 	exhaust_threshold = species.exhaust_threshold
 	max_nutrition = BASE_MAX_NUTRITION * species.max_nutrition_factor
 	nutrition = (rand(25,100)*0.01)*max_nutrition//Starting nutrition is randomised between 25-100% of max

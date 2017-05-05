@@ -63,7 +63,7 @@
 
 /datum/modifier/mutation/slur/on_say(var/message, var/datum/language/language, var/speechverb="says")
 	if (language && (!(language.flags & (NO_STUTTER | NONVERBAL | SIGNLANG | HIVEMIND))))
-		.= list(slur(message), language, verb = pick("slobbers","slurs"))
+		.= list(slur(message), language, pick("slobbers","slurs"))
 
 /proc/slur(phrase)
 	phrase = html_decode(phrase)
@@ -99,12 +99,12 @@
 	blocks_speech = 1
 
 /datum/modifier/mutation/mute/on_say(var/message, var/datum/language/language, var/speechverb="says")
-	if (language && ((language.flags & (SIGNLANG | HIVEMIND))))
-		return null //Signlanguage and hive mind don't use your voice, so we won't alter them at all
+	if (language && ((language.flags & (SIGNLANG | HIVEMIND | NO_TALK_MSG))))
+		return null //Signlanguage and hive mind don't use your voice, so we won't alter them at all. No talk msg is for audible emotes
 	else if (language && ((language.flags & (NONVERBAL))))
-		.= list(stars(message, 75), language, speechverb)
-		//If language is partially nonverbal, stars out 75% of text.
-		//This is the inverse of the 25% that is lost without visual context, indicating how much is gesticular
+		.= list(stars(message, 25), language, speechverb)
+		//If language is partially nonverbal, stars out 25% of text.
+		//This is the inverse of the 75% that is lost without visual context, indicating how much is gesticular
 	else
 		//Entirely verbal language. Fails completely
 		.= list("", language, speechverb)

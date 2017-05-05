@@ -6,7 +6,8 @@
 	density = 1
 	var/health = 100.0
 	flags = CONDUCT
-	w_class = 5
+	w_class = 13
+	mobility_factor = 1.1 //These things are heavy
 
 	var/valve_open = 0
 	var/release_pressure = ONE_ATMOSPHERE

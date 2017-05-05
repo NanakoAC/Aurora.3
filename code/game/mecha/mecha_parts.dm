@@ -8,7 +8,8 @@
 	name = "mecha part"
 	icon = 'icons/mecha/mech_construct.dmi'
 	icon_state = "blank"
-	w_class = 5
+	w_class = 8 //These have to be light enough to pick up, so high factor to compensate
+	mobility_factor = 1.6
 	flags = CONDUCT
 	origin_tech = list(TECH_DATA = 2, TECH_MATERIAL = 2)
 
@@ -18,6 +19,8 @@
 	icon_state = "backbone"
 	var/datum/construction/construct
 	flags = CONDUCT
+	w_class = 18
+	mobility_factor = 1
 
 	attackby(obj/item/W as obj, mob/user as mob)
 		if(!construct || !construct.action(W, user))
@@ -248,7 +251,7 @@
 
 /obj/item/mecha_parts/chassis/odysseus
 	name = "Odysseus Chassis"
-
+	w_class = 16 //More lightweight
 	New()
 		..()
 		construct = new /datum/construction/mecha/odysseus_chassis(src)

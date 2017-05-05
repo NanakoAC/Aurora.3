@@ -128,3 +128,5 @@
 
 /proc/RoundUpToPowerOfTwo(var/val)
     return 2 ** -round(-log(2,val))
+
+#define SCALE(targ,min,max) (targ - min) / (max - min)

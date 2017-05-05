@@ -14,6 +14,8 @@
 	boot_type = /obj/item/clothing/shoes/magboots/rig/terminator
 	glove_type = /obj/item/clothing/gloves/rig/terminator
 
+	active_strength_bonus = 0 //Terminator strength is inherent to their subspecies, and they have a lot of it. The suit is not meant for organics
+
 	initial_modules = list(
 		/obj/item/rig_module/maneuvering_jets,
 		/obj/item/rig_module/grenade_launcher/frag,

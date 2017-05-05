@@ -173,3 +173,4 @@ var/global/list/exo_beacons = list()
 // Boolean to indicate whether objects should initialize themselves in their New() or wait for the game ticker to do it.
 // Check world.dm for the object list.
 var/global/objects_initialized = 0
+

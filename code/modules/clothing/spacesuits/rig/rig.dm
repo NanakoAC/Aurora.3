@@ -16,6 +16,13 @@
 	req_access = list()
 	w_class = 4
 
+	var/active_strength_bonus = 2
+	//A bonus that is added to the wearer's strength when the rig is deployed and active.
+	//See the check_attributes function in rig_verbs.dm for the full logic
+	//Value of the strength bonus is based on the size/weight of the suit, and the intended applications
+		//Highest bonuses are on breacher, mining and rescue suits, as they're designed for heavy lifting and melee combat.
+
+
 	// These values are passed on to all component pieces.
 	armor = list(melee = 40, bullet = 5, laser = 20,energy = 5, bomb = 35, bio = 100, rad = 20)
 	min_cold_protection_temperature = SPACE_SUIT_MIN_COLD_PROTECTION_TEMPERATURE
@@ -293,7 +300,7 @@
 	// Success!
 	canremove = seal_target
 	wearer << "<font color='blue'><b>Your entire suit [canremove ? "loosens as the components relax" : "tightens around you as the components lock into place"].</b></font>"
-
+	update_attributes()
 	if(wearer != initiator)
 		initiator << "<font color='blue'>Suit adjustment complete. Suit is now [canremove ? "unsealed" : "sealed"].</font>"
 
@@ -356,8 +363,11 @@
 			chest.slowdown = offline_slowdown
 		return
 
-	if(cell && cell.charge > 0 && electrified > 0)
-		electrified--
+	if(cell && cell.charge > 0)
+		if (electrified > 0)
+			electrified--
+		if (cell.percent() < 30)
+			update_attributes()
 
 	if(malfunction_delay > 0)
 		malfunction_delay--
@@ -652,6 +662,9 @@
 
 	if(piece == "helmet" && helmet)
 		helmet.update_light(wearer)
+	else
+		//Helmet isnt taken into account, minor optimisation
+		update_attributes()
 
 /obj/item/weapon/rig/proc/deploy(mob/M,var/sealed)
 

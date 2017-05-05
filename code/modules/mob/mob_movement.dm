@@ -221,8 +221,9 @@
 
 	if(mob.transforming)	return//This is sota the goto stop mobs from moving var
 
+	var/mob/living/L
 	if(isliving(mob))
-		var/mob/living/L = mob
+		L = mob
 		if(L.incorporeal_move)//Move though walls
 			Process_Incorpmove(direct)
 			return
@@ -311,6 +312,79 @@
 		else
 			tally *= config.walk_delay_multiplier
 
+
+		//Here we handle strength-dependant slowdown for dragging people and objects
+		if (L)//Only living mobs can grab and pull things
+			var/burdenmult = 1
+
+			//Handle pulled mobs and objects
+			if (L.pulling)
+				if (istype(L.pulling, /obj))
+					var/obj/O = L.pulling
+					var/effective_weight = O.w_class * O.mobility_factor //Factor in any wheels and such attached
+					if (effective_weight > (L.strength * 2))
+						L << span("danger", "You try your hardest, but [O.name] is just too heavy, it's going nowhere!")
+						//Drop the item, we can't pull it
+						L.pulling = null //I hope this is the correct way to drop a pulled item. Needs checking.
+					else if (effective_weight > (L.strength * 0.75))
+					//If the object's weight is less than 75% of your strength, it wont slow you down at all
+						burdenmult = max(0.1, 1 - SCALE(effective_weight, L.strength * 0.5, L.strength * 2))
+						//You are slowed by a value between 0-90% depending on how the mass of the thing relates to your strength
+				else if (istype(L.pulling, /mob/living))
+					var/mob/living/LM = L.pulling
+					var/effective_size = LM.mob_size
+					if (!LM.lying)
+						effective_size *= 0.5 //If someone is on their feet, they are easier to pull around. They walk with you
+
+					if (effective_size > (L.strength * 2))
+						L << span("danger", "You try your hardest, but [LM.name] is just too heavy, they're going nowhere!")
+						//Drop the item, we can't pull it
+						L.pulling = null //I hope this is the correct way to drop a pulled item. Needs checking.
+					else if (effective_size > (L.strength * 0.75))
+					//If the object's weight is less than 75% of your strength, it wont slow you down at all
+						burdenmult = max(0.1, 1 - SCALE(effective_size, L.strength * 0.5, L.strength * 2))
+						//You are slowed by a value between 0-90% depending on how the mass of the thing relates to your strength
+
+			//Handle grabbed mobs
+			for (var/obj/item/weapon/grab/G in L)
+				var/mob/living/LM = G.affecting
+				if (!istype(LM))//Safety check
+					continue
+
+				var/effective_size = L.mob_size
+				if (!LM.lying)
+					effective_size *= 0.5
+					//If someone is on their feet, they are easier to pull around. They walk with you
+
+
+				var.effective_strength = L.strength
+				if (G.state > 1)
+					//If you're using both hands to grab someone, you can pull them around more easily
+					effective_strength *= 1.5
+
+				if (effective_size > (effective_strength * 2))
+					L << span("danger", "You try your hardest, but [LM.name] is just too heavy, they're going nowhere!")
+					qdel(G) //Let go of the mob
+				else if (effective_size > (effective_strength * 0.5))
+					//If the object's weight is less than half your strength, it wont slow you down at all
+					burdenmult *= max(0.1, 1 - SCALE(effective_size, L.strength * 0.5, L.strength * 2))
+					//You are slowed by a value between 0-90% depending on how the mass of the thing relates to your strength
+
+			//We have a final burdenmult which is a value in the range 0.1, used as a multiplier on your speed
+
+			//Now for a sanity check, to prevent a repeat of the minwalkdelay freezing bug
+			if (burdenmult < 0.1)
+				L << span("danger", "You're trying to pull too much, you can't move!")
+				//Instead of attempting a move thats going to leave a 10-15 second delay, we just say fuckit, you're not moving
+				move_delay += 10 //Add 1 second to the delay to prevent spamming the above message
+				return //And return. No movement happens
+
+			if (burdenmult != 1)
+				//If we get here, everything is good. Divide the tally by the burden
+				tally /= burdenmult
+
+			//And done. Heavy things now slow you down, strong people cope with it better.
+
 		move_delay += tally
 
 
@@ -336,12 +410,11 @@
 		moving = 1
 		//Something with pulling things
 		if(locate(/obj/item/weapon/grab, mob))
-			move_delay = max(move_delay, world.time + 7)
-			var/list/L = mob.ret_grab()
-			if(istype(L, /list))
-				if(L.len == 2)
-					L -= mob
-					var/mob/M = L[1]
+			var/list/Li = mob.ret_grab()
+			if(istype(Li, /list))
+				if(Li.len == 2)
+					Li -= mob
+					var/mob/M = Li[1]
 					if(M)
 						if ((get_dist(mob, M) <= 1 || M.loc == mob.loc))
 							var/turf/T = mob.loc
@@ -354,11 +427,11 @@
 								if ((get_dist(mob, M) > 1 || diag))
 									step(M, get_dir(M.loc, T))
 				else
-					for(var/mob/M in L)
+					for(var/mob/M in Li)
 						M.other_mobs = 1
 						if(mob != M)
 							M.animate_movement = 3
-					for(var/mob/M in L)
+					for(var/mob/M in Li)
 						spawn( 0 )
 							step(M, direct)
 							return

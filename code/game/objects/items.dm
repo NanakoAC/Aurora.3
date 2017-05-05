@@ -75,6 +75,9 @@
 
 	var/icon_override = null  //Used to override hardcoded clothing dmis in human clothing pr
 
+	var/list/attribute_mods = list()
+	//List of attribute modifiers, in form like "strength" = 2. Used to prevent tons of modifiers
+
 /obj/item/Destroy()
 	if(ismob(loc))
 		var/mob/m = loc

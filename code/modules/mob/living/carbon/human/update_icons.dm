@@ -169,16 +169,24 @@ Please contact me on #coderbus IRC. ~Carn x
 		if(lying && !species.prone_icon) //Only rotate them if we're not drawing a specific icon for being prone.
 			var/matrix/M = matrix()
 			M.Turn(90)
-			M.Scale(size_multiplier)
 			M.Translate(1,-6)
-			src.transform = M
-		else
-			var/matrix/M = matrix()
-			M.Scale(size_multiplier)
-			M.Translate(0, 16*(size_multiplier-1))
-			src.transform = M
+			transform = M
 
 	lying_prev = lying
+
+/mob/living/carbon/human/update_scale(var/animate = 0)
+	var/matrix/M = matrix()
+	M.Scale(size_multiplier)
+	if (lying)
+		M.Turn(90)
+		M.Translate(1,-6)
+	else
+		M.Translate(0, 16*(size_multiplier-1))
+	if (animate)
+		animate(src, transform = M, time = 30)
+	else
+		transform = M
+	return M
 
 var/global/list/damage_icon_parts = list()
 
@@ -348,6 +356,8 @@ var/global/list/damage_icon_parts = list()
 
 	//tail
 	update_tail_showing(0)
+
+	update_scale()
 
 //HAIR OVERLAY
 /mob/living/carbon/human/proc/update_hair(var/update_icons=1)

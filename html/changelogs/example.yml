@@ -22,7 +22,7 @@
 #################################
 
 # Your name.  
-author: N3X15
+author: Nanako
 
 # Optional: Remove this file after generating master changelog.  Useful for PR changelogs that won't get used again.
 delete-after: True
@@ -33,5 +33,7 @@ delete-after: True
 # Also, all entries are changed into a single [] after a master changelog generation. Just remove the brackets when you add new entries.
 # Please surround your changes in  double quotes ("), as certain characters otherwise screws up compiling. The quotes will not show up in the changelog.
 changes: 
-  - rscadd: "Added a changelog editing system that should cause fewer conflicts and more accurate timestamps."
-  - rscdel: "Killed innocent kittens."
+  - rscadd: "Rebuilt the mutations system under the hood. Most of this wont be visible to users."
+  - rscadd: "Added a new Strength mechanic, which affects melee damage, grappling, moving heavy objects, and many other interactions. Base strength varies by species."
+  - tweak: "Hardsuits and force gloves now boost the wearer's strength when active. Both cannot be used at the same time. This completely replaces the old effects of force gloves."
+  - rscadd: "Added dollies, hand tools for moving heavy machinery and cargo. Some are added to engineering and the cargo bay. Moving things without them is slow."

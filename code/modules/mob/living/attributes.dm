@@ -44,7 +44,7 @@ dragging/pulling objects, picking up items, hauling heavy things around, wearing
 	for (var/v in modifiers)
 		var/datum/modifier/M = modifiers[v]
 		if (M.active)
-			M.deactivate()
+			M.deactivate(0) //Feedback var of 0 prevents audio/text/graphics
 			modbuffer += M //Keep a buffer of the ones we disabled so we can re-enable only them
 
 	//Then sync the attributes to their base values
@@ -52,9 +52,10 @@ dragging/pulling objects, picking up items, hauling heavy things around, wearing
 
 	//Then re-enable only the ones we turned off previously
 	for (var/datum/modifier/M in modbuffer)
-		M.activate()
+		M.activate(0) //Feedback var of 0 prevents audio/text/graphics
 
 	//Now we add any bonuses from equipment. Rigs, force gloves, etc
+	//This section only really applies to humans right now, but it could also apply to drone/nymph hats, dog armor, and various other accessories
 	for (var/obj/item/I in get_worn_items())
 		if (isnum(I.attribute_mods["strength"]))
 			strength += I.attribute_mods["strength"]

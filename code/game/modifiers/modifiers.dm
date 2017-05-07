@@ -203,13 +203,17 @@ it should be avoided in favour of manual removal where possible
 		if (.==src)
 			update_controller()
 
-/datum/modifier/proc/activate()
+
+//Feedback var indicates whether the user/victim/subject should be given any indication.
+//If a feedback value of 0 is passed, the modifier is expected to cancel ALL feedback to players. Graphics, text, audio, etc
+//Feedback 0 means the modifier should be completely transparent and undetectable to players.
+/datum/modifier/proc/activate(var/feedback = 1)
 	if (!gcDestroyed && !active && target)
 		active = 1
 		return 1
 	return 0
 
-/datum/modifier/proc/deactivate()
+/datum/modifier/proc/deactivate(var/feedback = 1)
 	active = 0
 	return 1
 

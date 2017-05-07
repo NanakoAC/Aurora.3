@@ -148,9 +148,9 @@
 		//M.size_multiplier = 1
 
 /datum/dna/gene/basic/hulk
-	name="Hulk"
+	name="Gigantism"
 	activation_messages=list("Your muscles hurt.")
-	mutation=HULK
+	mutation="gigantism"
 
 	New()
 		block=HULKBLOCK
@@ -161,28 +161,6 @@
 			return 0
 		return ..(M,flags)
 
-	activate(var/mob/M, var/connected, var/flags)
-		world << "Hulk activated!"
-		..(M,connected,flags)
-		//M.size_multiplier = 1.25
-		M.strength += 10
-
-
-	deactivate(var/mob/M, var/connected, var/flags)
-		..(M,connected,flags)
-		//M.size_multiplier = 1
-		M.strength -= 10
-
-	//No more green skin
-
-	OnMobLife(var/mob/living/carbon/human/M)
-		if(!istype(M)) return
-		if(M.health <= 25)
-			M.mutations.Remove(HULK)
-			M.update_mutations()		//update our mutation overlays
-			M << "<span class='warning'>You suddenly feel very weak.</span>"
-			M.Weaken(3)
-			M.emote("collapse")
 
 /datum/dna/gene/basic/xray
 	name="X-Ray Vision"

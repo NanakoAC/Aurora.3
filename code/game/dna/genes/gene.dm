@@ -110,7 +110,7 @@
 	return probinj(activation_prob,(flags&MUTCHK_FORCED))
 
 /datum/dna/gene/basic/activate(var/mob/M)
-	M.mutations.Add(mutation)
+	M.add_mutation(mutation, SOURCE_GENETIC)
 	if(activation_messages.len)
 		var/msg = pick(activation_messages)
 		M << "<span class='notice'>[msg]</span>"

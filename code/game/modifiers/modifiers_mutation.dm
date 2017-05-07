@@ -190,6 +190,8 @@ A mutation is a subclass of modifier with extended functionality and some specif
 			//A duration was passed with this mutation. We wont overwrite a permanant effect with a temporary one
 
 
+
+
 /datum/modifier/mutation/adjust_duration(var/change = 0, var/set_duration = 0)
 	for (var/v in durations)
 		if (set_duration)

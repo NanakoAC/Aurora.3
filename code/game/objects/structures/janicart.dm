@@ -21,6 +21,8 @@
 	var/signs = 0	//maximum capacity hardcoded below
 	var/has_items = 0//This is set true whenever the cart has anything loaded/mounted on it
 	var/dismantled = 0//This is set true after the object has been dismantled to avoid an infintie loop
+	w_class =14
+	mobility_factor = 0.6
 
 ///obj/structure/janitorialcart/New()
 

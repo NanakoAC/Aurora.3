@@ -7,6 +7,9 @@
 /mob/proc/update_icons()
 	return
 
+/mob/proc/update_scale(var/animate = 0)
+	return
+
 /mob/proc/update_hud()
 	return
 

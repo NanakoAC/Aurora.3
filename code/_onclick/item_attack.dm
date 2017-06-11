@@ -34,7 +34,7 @@ avoid code duplication. This includes items that may sometimes act as a standard
 
 /atom/movable/attackby(obj/item/W, mob/user)
 	if(!(W.flags & NOBLUDGEON))
-		visible_message("<span class='danger'>[src] has been hit by [user] with [W].</span>")
+		W.bludgeon(user, src)
 
 /mob/living/attackby(obj/item/I, mob/user)
 	if(!ismob(user))
@@ -56,30 +56,42 @@ avoid code duplication. This includes items that may sometimes act as a standard
 	if(M == user && user.a_intent != I_HURT)
 		return 0
 
-
-	/////////////////////////
-	user.lastattacked = M
-	M.lastattacker = user
-
-	if(!no_attack_log)
-		user.attack_log += "\[[time_stamp()]\]<font color='red'> Attacked [M.name] ([M.ckey]) with [name] (INTENT: [uppertext(user.a_intent)]) (DAMTYE: [uppertext(damtype)])</font>"
-		M.attack_log += "\[[time_stamp()]\]<font color='orange'> Attacked by [user.name] ([user.ckey]) with [name] (INTENT: [uppertext(user.a_intent)]) (DAMTYE: [uppertext(damtype)])</font>"
-		msg_admin_attack("[key_name(user)] attacked [key_name(M)] with [name] (INTENT: [uppertext(user.a_intent)]) (DAMTYE: [uppertext(damtype)]) (<A HREF='?_src_=holder;adminplayerobservecoodjump=1;X=[user.x];Y=[user.y];Z=[user.z]'>JMP</a>)" )
-	/////////////////////////
-
-	user.setClickCooldown(DEFAULT_ATTACK_COOLDOWN)
-	user.do_attack_animation(M)
-
-	var/hit_zone = M.resolve_item_attack(src, user, target_zone)
-	if(hit_zone)
-		apply_hit_effect(M, user, hit_zone)
+	bludgeon(user, M, target_zone)
 
 	return 1
 
-//Called when a weapon is used to make a successful melee attack on a mob. Returns the blocked result
-/obj/item/proc/apply_hit_effect(mob/living/target, mob/living/user, var/hit_zone)
+/obj/item/proc/bludgeon(var/mob/living/user, var/atom/target, var/target_zone = "chest")
+	user.do_attack_animation(target)
 	if(hitsound)
 		playsound(loc, hitsound, 50, 1, -1)
+
+	if (istype(target, /mob))
+		var/mob/living/L = target
+		/////////////////////////
+		L.lastattacked = user
+		L.lastattacker = user
+
+		if(!no_attack_log)
+			user.attack_log += "\[[time_stamp()]\]<font color='red'> Attacked [L.name] ([L.ckey]) with [name] (INTENT: [uppertext(user.a_intent)]) (DAMTYE: [uppertext(damtype)])</font>"
+			L.attack_log += "\[[time_stamp()]\]<font color='orange'> Attacked by [user.name] ([user.ckey]) with [name] (INTENT: [uppertext(user.a_intent)]) (DAMTYE: [uppertext(damtype)])</font>"
+			msg_admin_attack("[key_name(user)] attacked [key_name(L)] with [name] (INTENT: [uppertext(user.a_intent)]) (DAMTYE: [uppertext(damtype)]) (<A HREF='?_src_=holder;adminplayerobservecoodjump=1;X=[user.x];Y=[user.y];Z=[user.z]'>JMP</a>)" )
+		/////////////////////////
+
+		user.setClickCooldown(DEFAULT_ATTACK_COOLDOWN)
+
+
+		var/hit_zone = L.resolve_item_attack(src, user, target_zone)
+		if(hit_zone)
+			apply_hit_effect(L, user, hit_zone)
+	else
+		visible_message("<span class='danger'>[target] has been hit by [user] with [src].</span>")
+
+
+//Called when a weapon is used to make a successful melee attack on a mob. Returns the blocked result
+/obj/item/proc/apply_hit_effect(mob/living/target, mob/living/user, var/hit_zone, var/force_override = 0)
+	if(hitsound)
+		playsound(loc, hitsound, 50, 1, -1)
+
 
 	var/power = force * (user.strength * 0.1)
 	return target.hit_with_weapon(src, user, power, hit_zone)

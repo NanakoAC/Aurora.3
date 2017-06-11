@@ -125,16 +125,14 @@ like alien artifacts.
 #define INTERCEPT_STEP  	0x2 //Whenever the mob moves under its own power
 #define	INTERCEPT_HAND     	0x4 //Whenever the mob uses attack_hand, or attack_generic on an object
 #define INTERCEPT_LIFE      0x8 //When the mob's life ticks.
-#define INTERCEPT_DEATH		0x10
-//#define SLOT_EARS       0x10
-//#define SLOT_MASK       0x20
-//#define SLOT_HEAD       0x40
-//#define SLOT_FEET       0x80
-//#define SLOT_ID         0x100
-//#define SLOT_BELT       0x200
-//#define SLOT_BACK       0x400
-//#define SLOT_POCKET     0x800
-//#define SLOT_DENYPOCKET 0x1000
-//#define SLOT_TWOEARS    0x2000
-//#define SLOT_TIE        0x4000
-//#define SLOT_HOLSTER	0x8000
+#define INTERCEPT_DEATH		0x10 //When the mob dies
+#define INTERCEPT_CLICK		0x20 //When the mob clicks on anything. only works on player-controlled mobs
+
+
+
+//Interaction contexts. These are used for fumble_act. These flags are used to define what the user was attempting to do with the object
+#define CONTEXT_TOUCH	0x1 //Using an empty hand on an object that's located in another atom that isnt yourself
+#define CONTEXT_SWITCH	0x2 //Using an empty hand on an object located in yourself. Generally, switching between hands
+#define CONTEXT_SELF	0x4	//Using the object on itself. Ie, attack_Self
+#define CONTEXT_ATTACK	0x8 //Using the object on another atom, without throw mode
+#define CONTEXT_THROW	0x10 //Using the object on another atom, in throw mode

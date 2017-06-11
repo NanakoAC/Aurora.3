@@ -577,6 +577,7 @@
 #include "code\game\modifiers\modifiers.dm"
 #include "code\game\modifiers\modifiers_chem.dm"
 #include "code\game\modifiers\modifiers_mutation.dm"
+#include "code\game\modifiers\mutations\clumsy.dm"
 #include "code\game\modifiers\mutations\powers.dm"
 #include "code\game\modifiers\mutations\speech.dm"
 #include "code\game\objects\buckling.dm"

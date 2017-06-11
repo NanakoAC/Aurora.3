@@ -72,3 +72,15 @@
 
 /proc/is_station_turf(var/turf/T)
 	return T && isStationLevel(T.z)
+
+
+//Takes two turfs as inputs
+//Returns all tiles that are adjacent to both inputs
+/proc/shared_adjacent_turfs(var/turf/T1, var/turf/T2)
+	var/list/A1 = list()
+	for (var/turf/t in range(1, T1))
+		A1 += t
+	var/list/A2 = list()
+	for (var/turf/t in range(1, T2))
+		A2 += t
+	return (A1 & A2)

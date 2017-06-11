@@ -34,7 +34,25 @@
 	if(stat)
 		return
 
+	var/adjacency = A.Adjacent(src) //Cached here for altering
+	//Telekinesis doesn't care if you're nearby in order to touch things
+	var/restrained = restrained() //Restrained is cached here so that mutations can alter it.
+	//For example, telekinesis doesn't care if you're cuffed, you move things with your mind, not your hands
 	var/list/modifiers = params2list(params)
+
+	for (var/m in mutations)
+		var/datum/modifier/mutation/M = mutations[m]
+		if (M.intercept_flags & INTERCEPT_CLICK)
+			var/list/l = M.on_click(A, adjacency, restrained, modifiers)
+			if (l)
+				A = l[1]
+				adjacency = l[2]
+				restrained = l[3]
+				modifiers = l[4]
+				if (!A)
+					return 0 //If we no longer have a target after a mutation is done messing with things
+					//Then we immediately return and don't process the rest of the click. It is dropped.
+
 	if(modifiers["shift"] && modifiers["ctrl"])
 		CtrlShiftClickOn(A)
 		return
@@ -51,7 +69,7 @@
 		CtrlClickOn(A)
 		return
 
-	if(control_disabled || !canClick())
+	if(control_disabled || !canClick() || restrained)
 		return
 
 	if(multitool_mode && isobj(A))

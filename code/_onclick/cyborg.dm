@@ -15,7 +15,27 @@
 		build_click(src, client.buildmode, params, A)
 		return
 
+	var/adjacency = A.Adjacent(src) //Cached here for altering
+	//Telekinesis doesn't care if you're nearby in order to touch things
+	var/restrained = restrained() //Restrained is cached here so that mutations can alter it.
+	//For example, telekinesis doesn't care if you're cuffed, you move things with your mind, not your hands
 	var/list/modifiers = params2list(params)
+
+	for (var/m in mutations)
+		var/datum/modifier/mutation/M = mutations[m]
+		if (M.intercept_flags & INTERCEPT_CLICK)
+			var/list/l = M.on_click(A, adjacency, restrained, modifiers)
+			if (l)
+				A = l[1]
+				adjacency = l[2]
+				restrained = l[3]
+				modifiers = l[4]
+				if (!A)
+					return 0 //If we no longer have a target after a mutation is done messing with things
+					//Then we immediately return and don't process the rest of the click. It is dropped.
+
+
+
 	if(modifiers["shift"] && modifiers["ctrl"])
 		CtrlShiftClickOn(A)
 		return
@@ -48,12 +68,14 @@
 			src << "<span class='userdanger'>Your camera isn't functional.</span>"
 		return
 
-	/*
-	cyborg restrained() currently does nothing
-	if(restrained())
-		RestrainedClickOn(A)
-		return
-	*/
+
+
+
+	//Cyborg restrained clickon doesnt do anything, so just return if theyre restrained.
+	if (restrained)
+		setClickCooldown(10)
+		return 0
+
 
 	var/obj/item/W = get_active_hand()
 
@@ -95,7 +117,7 @@
 
 	// cyborgs are prohibited from using storage items so we can I think safely remove (A.loc && isturf(A.loc.loc))
 	if(isturf(A) || isturf(A.loc))
-		if(A.Adjacent(src)) // see adjacent.dm
+		if(adjacency) // see adjacent.dm
 
 			var/resolved = A.attackby(W, src)
 			if(!resolved && A && W)

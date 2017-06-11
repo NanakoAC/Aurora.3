@@ -221,6 +221,23 @@ A mutation is a subclass of modifier with extended functionality and some specif
 	return null
 
 
+//Clicking: Whenever the mob's client clicks on anything.
+//Inputs are: Target: The atom that was clicked. Adjacency, restrained and modifiers - the list of extra keys held
+//Return a list in the form of target, adjacency, restrained, modifiers, to modify these parameters
+//Return a valid list with the target set to null in order to silently drop the click
+//Return null to let the click continue unmodified
+/datum/modifier/mutation/proc/on_click(var/atom/A, var/adjacency, var/restrained, var/list/modifiers)
+	return null
+
+
+//Locomotion: This fires when the mob moves under their own power.
+//Specifically, it fires BEFORE the movement happens, allowing the movement to be redirected or cancelled
+//This does not fire when the mob is moved but not by its own power. Including being pulled around, riding vehicles, carried, teleported, etc
+//Inputs are destination turf, and direction. Return a list in that order to override those vars
+//Returning a null location will cancel the movement.
+/datum/modifier/mutation/proc/on_step(var/turf/n, var/direction)
+	return null
+
 /client/verb/teststutter()
 	set category = "Debug"
 	new /obj/structure/sink(mob.loc)

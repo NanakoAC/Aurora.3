@@ -278,7 +278,7 @@
 	prefs.last_id = computer_id			//these are gonna be used for banning
 
 	. = ..()	//calls mob.Login()
-	
+
 	prefs.sanitize_preferences()
 
 	if (byond_version < config.client_error_version)
@@ -297,6 +297,7 @@
 	if(holder)
 		add_admin_verbs()
 
+	/*
 	// Forcibly enable hardware-accelerated graphics, as we need them for the lighting overlays.
 	// (but turn them off first, since sometimes BYOND doesn't turn them on properly otherwise)
 	spawn(5) // And wait a half-second, since it sounds like you can do this too fast.
@@ -304,6 +305,7 @@
 			winset(src, null, "command=\".configure graphics-hwmode off\"")
 			sleep(2) // wait a bit more, possibly fixes hardware mode not re-activating right
 			winset(src, null, "command=\".configure graphics-hwmode on\"")
+	*/
 
 	send_resources()
 	nanomanager.send_resources(src)

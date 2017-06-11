@@ -51,6 +51,25 @@
 		return
 
 	var/list/modifiers = params2list(params)
+
+	var/adjacency = A.Adjacent(src) //Cached here for altering
+	//Telekinesis doesn't care if you're nearby in order to touch things
+	var/restrained = restrained() //Restrained is cached here so that mutations can alter it.
+	//For example, telekinesis doesn't care if you're cuffed, you move things with your mind, not your hands
+
+	for (var/m in mutations)
+		var/datum/modifier/mutation/M = mutations[m]
+		if (M.intercept_flags & INTERCEPT_CLICK)
+			var/list/l = M.on_click(A, adjacency, restrained, modifiers)
+			if (l)
+				A = l[1]
+				adjacency = l[2]
+				restrained = l[3]
+				modifiers = l[4]
+				if (!A)
+					return 0 //If we no longer have a target after a mutation is done messing with things
+					//Then we immediately return and don't process the rest of the click. It is dropped.
+
 	if(modifiers["shift"] && modifiers["ctrl"])
 		CtrlShiftClickOn(A)
 		return 1
@@ -84,7 +103,10 @@
 		var/obj/mecha/M = loc
 		return M.click_action(A, src)
 
-	if(restrained())
+
+
+
+	if(restrained)
 		setClickCooldown(10)
 		RestrainedClickOn(A)
 		return 1
@@ -130,7 +152,7 @@
 	// A is a turf or is on a turf, or in something on a turf (pen in a box); but not something in something on a turf (pen in a box in a backpack)
 	sdepth = A.storage_depth_turf()
 	if(isturf(A) || isturf(A.loc) || (sdepth != -1 && sdepth <= 1))
-		if(A.Adjacent(src)) // see adjacent.dm
+		if(adjacency) // see adjacent.dm
 			setMoveCooldown(5)
 
 			if(W)
